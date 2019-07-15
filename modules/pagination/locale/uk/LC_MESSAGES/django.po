@@ -1,0 +1,27 @@
+# Ukrainian translation of django-pagination.
+# Copyright (C) 2008, django-pagination team
+# This file is distributed under the same license as the django-pagination package.
+# Dima Moroz <foomor@gmail.com>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-03-16 21:48+0200\n"
+"PO-Revision-Date: 2010-03-16 21:40+0300\n"
+"Last-Translator: Dima Moroz <foomor@gmail.com>\n"
+"Language-Team: UA <root@archlinux.org.ua>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/pagination/pagination.html:5
+#: templates/pagination/pagination.html:7
+msgid "previous"
+msgstr "сюди"
+
+#: templates/pagination/pagination.html:22
+#: templates/pagination/pagination.html:24
+msgid "next"
+msgstr "туди"
