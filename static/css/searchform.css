@@ -1,0 +1,30 @@
+#minus_search p, #minus_search td
+{
+    font-size:12px;
+    vertical-align:middle;
+}
+#minus_search td
+{
+    padding:2px 4px;
+    min-width:100px;
+}
+#minus_search label:
+{
+    color:black;
+}
+#minus_search input[type="text"]
+{
+    width:82%;
+    display:inline;
+    border:1px solid #666666;
+}
+
+#minus_search input[type="checkbox"]
+{
+    /*float:left;*/
+}
+
+#minus_search select
+{
+
+}
