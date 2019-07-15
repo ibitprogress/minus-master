@@ -1,0 +1,75 @@
+
+
+{% load cache %}
+{% cache 1200 topinfo %}
+            <div id="top_minuses" class="topinfo">
+                <h3>ТОП завантажень</h3>
+                
+                {% load ratings %}
+                {% top_rated "MinusRecord" %}
+                {% comment %}
+                template: djangoratings/top_rated.html
+                {% endcomment %}
+
+            </div>
+            {% load banners_tags %}
+            {% banner "left_banner" %}
+            <div id="top_week_minuses" class="topinfo">
+                <h3>ТОП за тиждень</h3>
+                
+                {% load minusstore_tags %}
+                {% top_rated_week "MinusRecord" %}
+                {% comment %}
+                template: minusstore/top_rated.html
+                {% endcomment %}
+
+            </div>
+            <div id="top_users" class="topinfo">
+                <h3>ТОП користувачів</h3>
+            <div class="top_additional">Користувач <span class="right">Рейтинг</span></div>
+                {% load users_tags %}
+                {% top_users  %}
+                {% comment %}
+                template: users/top_rated.html
+                {% endcomment %}
+
+        </div>
+        {% endcache %}
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>
+
+    {% cache 1800 stats %}
+    <div id="stats">
+    <h4>Статистика</h4>
+    <span class="stats">Всього файлів:</span> <span class="rating">{{records_count}}</span>
+    <table>
+    {% for type in statistics %}
+    {% if forloop.first %}
+    <tr class="cat_stat">
+    {% else %}
+    <tr>
+    {% endif %}
+        {% for cat in type %}
+        {% if forloop.first %}
+        <td class="stats">
+        {% else %}
+        <td class="rating">
+        {% endif %}
+        {{cat}}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    {% endcache %}
+
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:"  " }}
+</div>
+<div class="counter">
+{% load chunks %}
+{% chunk "counter" %}
+</div>
+

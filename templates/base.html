@@ -1,0 +1,219 @@
+{% if not pjax %}
+{% comment %}
+load all the shit only on clear-load
+{% endcomment %}
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="uk" lang="uk">
+
+<head>
+    {% load chunks %}
+    {% load banners_tags %}
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="description" content="{% block description %}{% chunk "description" %}{% endblock %}">
+    <meta name="keywords" content="{% chunk "keywords" %}">
+    <link href="{{ MEDIA_URL }}css/reset.css" rel="stylesheet" media="screen" type="text/css" />
+    <link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet" media="screen" type="text/css" />
+    <link href="{{ MEDIA_URL }}css/tooltip.css" rel="stylesheet" media="screen" type="text/css" />
+    <link type="image/png" id="favicon" href="{{MEDIA_URL}}img/favicon0.png" rel="shortcut icon"/>
+    <link rel="image_src" href="{{ MEDIA_URL }}img/logo.png"/>
+    <script src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}js/jquery-ui-1.8.16.custom.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.pjax.js" charset="utf-8"></script>
+    <script src="{{ MEDIA_URL }}js/tooltip.js" type="text/javascript"></script>
+<link rel="alternate" 
+      type="application/rss+xml" 
+      title="RSS" 
+      href="{% url feeds "latest" %}" />
+    <script type="text/javascript">
+    var CKEDITOR_BASEPATH ="{{MEDIA_URL}}js/ckeditor/"; 
+    </script>
+
+    {% endif %}
+	<title>{% block title %} minus.lviv.ua — Українські мінусовки{% endblock %}</title>
+{% if not pjax %}
+    <script type="text/javascript"> 
+        $(document).ready(function() {
+            $('.banner').show();
+    {% if request.user.is_authenticated %}
+            $('.user').hover(
+            function()
+            {
+                titl = this.title;
+                $(this).removeAttr("title");
+                if ($("#tooltip").length < 2){ //0 = undefined, 1 = none. So: we use 2
+                    tooltip(this);
+                }
+            },
+            function()
+            {
+                this.title = titl;
+            });
+
+    {% endif %}
+    });
+
+    </script>
+</head>
+    {% load minusstore_tags %}
+    {% statistics %}
+<body>
+    <div id="header">
+        <div id="topnav">
+            <a id="logo" href="/"><img src="{{ MEDIA_URL }}img/logo.png"/></a>
+            <ul id="menu">
+                <li><a class="dynamic" href="{% url minus_index %}">Мінусовки</a>
+                </li>
+                <li><a class="dynamic" href="{% url links_list %}">Партнери</a></li>
+                <li><a class="dynamic" href="{% url room_list %}">Чат</a></li>
+                <li><a href="{% url forum_index %}">Форум</a></li>
+                {% if request.user.is_staff %}
+                <li><a href="{% url admin:index %}">Адміністрування</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    
+    </div>
+    <div class="shadow"></div>
+    <div id="wrapper">
+        <div id="infobar">
+            <ul id="leftnav" class="decoborder">
+                <li class="shadowed"><a class="dynamic" href="{% url news_index %}">Новини</a></li>
+                <li class="shadowed"><a class="dynamic" href="{% url minus_index %}">Мінусовки</a><a href="{% url feeds "latest" %}" class="feedlink"><img title="RSS" src="{{MEDIA_URL}}img/icons/rss_small.png"/>
+                </a></li>
+                <li class="shadowed"><a href="{% url forum_index %}">Форум</a></li>
+                <li class="shadowed"><a class="dynamic" href="{% url blurbs_filter %}">Куплю / продам</a></li>
+                {% if request.user.is_authenticated %}
+                <li class="shadowed"><a class="dynamic" href="{% url user_list %}">Користувачі</a></li>
+                {% load radio_tags %}
+                <li class="shadowed"><a class="dynamic" href="{% url radio_page %}">Радіо</a><div class="radioblock_small">{% radio_widget %}</div></li>
+                {% else %}
+                <li class="shadowed"><a class="dynamic" href="{% url links_list %}">Партнери</a></li>
+                {% endif %}
+                
+                <div class="shadow"></div>
+            </ul>
+            <div id="search">
+            <form method="get" action="/search/" >
+            <input class="shadowed search_field" value="Пошук мінусовок" id="id_q" name="q" type="text" onClick="if (this.defaultValue==this.value)
+this.value = ''"/>
+            <input value="Пошук" type="submit"/>
+            <div class="shadow"></div>
+            <a class="dynamic right technical" href="{% url minus_search %}">Розширений пошук</a>
+            </form>
+            </div>
+
+            {% load minusstore_tags %}
+            {% load cache %}
+            {% cache 6000 letters %}
+            {% letters %}
+            <div id="alphabet">
+            {% for letter in letters %}
+            {% ifequal forloop.counter0 27 %}<br/>{% endifequal %}
+            <a class="dynamic" href="{% url minus_author_by_letter letter %}"> {{letter}}</a>{% endfor %}</div>
+            {% load vocal_contest_tags %}
+            {% contest_status %}
+            {% banner "top_banner" %}
+            {% endcache %}
+
+        </div>
+        <div id="right_sidebar">
+            {% block right_sidebar %}
+            {% endblock %}
+            {% include 'right_sidebar.html' %}
+        </div>
+        <div id="left_sidebar">
+            {% block left_sidebar %}
+            {% endblock %}
+            {% include 'left_sidebar.html' %}
+        </div>
+
+        
+        <div id="middle_container">
+        <div class="loader" style="display:none"><img src="{{MEDIA_URL}}img/loader.gif"></div>
+        <div id="reloadable">
+            
+{% endif %}
+{% comment %}
+load content anyway
+{% endcomment %}
+            <div id="subheader">
+            {% include 'subheader.html' %}
+                {% block subheader %}
+            {% endblock %}
+            </div>    
+
+            <div id="content">
+                {% block content %}
+                {% endblock %}
+        {% banner "bottom_banner" %}
+            </div>
+        <div class="sapelinks">
+{{ sape.next_links|safeseq|join:"   " }}
+{{ sape.next_links|safeseq|join:"   " }}
+        </div>
+
+        </div>
+        
+{% comment %}
+    Extrahead now is not extrahead but extrajs
+    with ajax-like applications it's more comfortable to place js in the end of dom instead of using document.ready in head
+
+{% endcomment %}
+{% block extrahead %}
+{% endblock %}
+{% if not pjax %}
+        </div>
+    </div>
+
+    <div class="shadowed" id="footer">
+        {% block footer %}
+        {% endblock %}
+        <p class="footer-text">
+Усі мінусовки викладені лише для ознайомлення.    © {% now "Y" %}    Українські мінусовки на minus.lviv.ua. Всі права захищено.
+        
+        </p>
+    </div>
+    <div class="shadow"></div>
+<!--[if !IE]> -->
+<script type="text/javascript" charset="utf-8">
+$('a.dynamic').pjax('#reloadable', {timeout:6000}).live('click', function(){
+    return false;
+});
+$('#reloadable')
+    .bind('pjax:start', function() { 
+        $('#reloadable').fadeOut(100);
+        $('.loader').show();
+    })
+    .bind('pjax:end',   function() { 
+        $('.loader').hide();
+        $('#reloadable').fadeIn(200);
+        var gotodiv = $('#content');
+        if (gotodiv.offset().top < $(window).scrollTop()){
+            $('html,body').animate({scrollTop: gotodiv.offset().top-70},'slow');
+        }
+    });
+</script>
+<!-- <![endif]-->
+   <script type="text/javascript" charset="utf-8">
+
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-21019274-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+
+        
+    </script>
+
+</body>
+</html>
+{% endif %}

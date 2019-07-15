@@ -1,0 +1,17 @@
+{% for id, score in top %}
+<dl>
+    <dt class="top_author">
+    {% if id.author %}
+    {{id.author}}
+    {% else %}
+    <a class="user" title="{{id.username}}" href="{{id.get_absolute_url}}">{{id.get_profile.fullname}}</a>
+    {% if id.user.is_staff %}
+    <span class="moderator">модератор</span>
+    {% endif %}
+    {% endif %}
+    {% if id.title %}
+    <dd class="top_item">
+    <a href="{{ id.get_absolute_url }}">{{ id.title }}</a>{% endif %}<span class="right rating">{{ score }}</span>
+</dd>
+</dl>
+{% endfor %}

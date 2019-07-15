@@ -1,0 +1,106 @@
+{% load minusstore_tags %}
+<div class="shadowed" id="upload_button">
+                <a href="{% url minus_upload %}" id="upload">Завантажити мінусовку</a>
+        </div>
+            <div class="shadow"></div>
+
+            <div id="userfield" class="shadowed">
+            {% if request.user.is_authenticated %}
+            <div class="userinfo">
+            <img class="avatar right" src="
+            {% if request.user.get_profile.avatar %}
+            {{ request.user.get_profile.avatar.url }}
+            {% else %}
+            {{ MEDIA_URL }}avatars/default.png
+            {% endif %}
+            " alt="avatar" />
+            <h5>{{ request.user.get_profile.fullname }}</h5>
+            <div class="additional_info {{request.user.get_profile.status_css}}">{{request.user.get_profile.status_title}}
+            </div>
+            {% if request.user.u_rate.rating > 0 %}
+            <div class="additional_rating">
+                <span class="technical">Рейтинг:</span>{{request.user.u_rate.rating}}
+            </div>
+            {% endif %}
+            </div>
+            <ul class="buttons">
+            <li><a class="dynamic" href="{% url user_profile request.user %}"><img src="{{MEDIA_URL}}img/icons/user_gray.png"/>Профіль</a></li>
+            <li><a class="dynamic" href="{% url messages_inbox %}"><img src="{{MEDIA_URL}}img/icons/email.png"/>Повідомлення
+                {% load inbox %}
+                {% inbox_count as messages_inbox_count %}
+                {% ifnotequal messages_inbox_count 0 %}
+                <span class="new-inbox-count">({{ messages_inbox_count }})</span>
+                {% endifnotequal %}</a></li>
+            <li><a class="dynamic" href="{% url friends_home %}"><img src="{{MEDIA_URL}}img/icons/group.png"/>Друзі
+                {% load friends_tags %}
+                {% ifnotequal request.user|invitations_to_count 0 %}
+                <span class="new-friend-requests-count">({{ request.user|invitations_to_count }})</span>
+                {% endifnotequal %}</a></li>
+            <li><a class="dynamic" href="{% url album_detail request.user.username %}"><img src="{{MEDIA_URL}}img/icons/camera.png"/>Фотоальбом</a></li>
+            <li><a class="dynamic" href="{% url video_album_detail request.user.username %}"><img src="{{MEDIA_URL}}img/icons/television.png"/>Відеоальбом</a></li>
+            <li><a class="dynamic" href="{% url minus_by_user request.user %}"><img src="{{MEDIA_URL}}img/icons/cd.png"/>Мінусовки</a></li>
+            <li><a class="dynamic" href="{% url list_albums "audio" request.user.username %}"><img src="{{MEDIA_URL}}img/icons/microphone.png"/>Записи</a></li>
+            {% newcomments request.user %}
+            <li><a class="dynamic" href="{% url blurbs_by_user request.user.username %}"><img src="{{MEDIA_URL}}img/icons/cart.png"/>Оголошення</a></li>
+            
+            {% load users_tags %}
+            {% if request.user.is_staff %}
+            <li><a href="{% url admin:users_staffticket_changelist %}"><img src="{{MEDIA_URL}}img/icons/asterisk_orange.png"/>Заявки до модераторів {% open_staff_tickets %}</a></li>
+            {% endif %}
+            <li id="exit" class="right"><a href="{% url auth_logout %}"><img src="{{MEDIA_URL}}img/icons/user_delete.png"/>Вийти</a></li>
+            </ul>
+
+            {% else %}
+            <form id="login_form" action="{% url quick_login %}" method="post">{% csrf_token %}
+            <h3>Вхід</h3>
+                <input class="shadowed" id="id_username" name="username" type="text"/> <label clas="right">ел.пошта</label>
+                <input class="shadowed" id="id_password" name="password" type="password"/> <label clas="right">пароль</label>
+                <input class="right" id="submit_login" type="submit" value="Увійти"/>
+            <a class="dynamic" href="{% url registration_register %}"><h3 id="register_link">Реєстрація</h3></a>
+            <a class="dynamic" href="{% url auth_password_reset %}">Відновити пароль?</a>
+            <input type="hidden" name="next" value="{{request.get_full_path}}" />
+            </form>
+            {% endif %}
+            </div>
+            <div class="shadow"></div>
+
+            {% load cache %}
+            {% cache 1200 commings %}
+            <div id="newcommings">
+                <h3>Поповнення файлів</h3>
+                <a class="altlink" href="{% url delivery_add %}">Підписатися на email</a>
+                    {% latest_arivals_block 10 %}
+            </div>
+            {% endcache %}
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>
+
+            {% cache 1200 archives %}
+            <div class="shadowed calendar" id="rightcalendar">
+            <h3>Архів мінусовок</h3>
+            {% monthminuses %}
+            {% load gencal %}
+            {% gencal month_minuses %}
+            </div>
+            <div class="shadow"></div>
+            {% endcache %}
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:"  " }}
+</div>
+
+            {% load banners_tags %}
+            {% cache 300 banner_r %}
+            {% banner "right_banner" %}
+            {% endcache %}
+            <div class="shadowed online" id="usrs_online">
+                {% comment %}
+                Shows last online users
+                {% endcomment %}
+                {% user_online 300 %}
+            </div>
+            <div class="shadow"></div>
+
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>

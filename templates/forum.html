@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>{% block title %} minus.lviv.ua — Українські мінусовки{% endblock %}</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+    <link href="{{ MEDIA_URL }}css/reset.css" rel="stylesheet" media="screen" type="text/css" />
+    <link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet" media="screen" type="text/css" />
+    <link href="{{ MEDIA_URL }}css/forum.css" rel="stylesheet" media="screen" type="text/css" />
+    <script src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}js/tooltip.js" type="text/javascript"></script>
+    <link type="image/x-icon" href="{{MEDIA_URL}}img/favicon.ico" rel="shortcut icon">
+    {% block extrahead %}
+    {% endblock %}
+
+    <script type="text/javascript"> 
+        $(document).ready(function() {
+            $('.banner').show();
+        });
+    </script>
+
+</head>
+
+<body>
+    <div id="header">
+        <div id="topnav">
+            <a id="logo" href="/"><img src="{{ MEDIA_URL }}img/logo.png"/></a>
+            <ul id="menu">
+                <li><a href="{% url minus_index %}">Мінусовки</a></li>
+                <li><a href="{% url links_list %}">Партнери</a></li>
+                <li><a href="{% url room_list %}">Чат</a></li>
+                <li><a href="{% url forum_index %}">Форум</a></li>
+                {% if request.user.is_staff %}
+                <li><a href="/admin">Адміністрування</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    
+    </div>
+    <div class="shadow"></div>
+
+            {% load chunks %}
+            {% load banners_tags %}
+            {% banner "top_banner" %}
+    <div id="forum-wrapper">
+        <div id="forum-navigation">
+            {% block forumnav %}
+            {% endblock %}
+        </div>
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>
+
+        <div id="forum-content">
+            {% block content %}
+            {% endblock %}
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>
+        </div>
+
+        <div id="forum-footer">
+            {% block forumfooter %}
+            <ul class="forum-icons">
+                <li><img src="{{ MEDIA_URL }}img/forum/thread.png"/> Звичайна тема</li>
+                <li><img src="{{ MEDIA_URL }}img/forum/popular-thread.png"/> Популярна тема (Більше 15 відповідей)</li>
+                <li><img src="{{ MEDIA_URL }}img/forum/very_popular-thread.png"/> Дуже популярна тема (Більше 25 відповідей)</li>
+                <li><img src="{{ MEDIA_URL }}img/forum/sticked-thread.png"/> Прикріплена тема</li>
+                <li><img src="{{ MEDIA_URL }}img/forum/closed-thread.png"/> Заблокована тема</li>
+            </ul>
+            {% endblock %}
+            {% block quickgoto %}
+            {% endblock %}
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>
+        </div>
+<div class="sapelinks">
+{{ sape.next_links|safeseq|join:", " }}
+</div>
+    {% banner "bottom_banner" %}
+        {% block footer %}
+        {% endblock %}
+{% chunk "counter" %}
+    </div>
+
+
+    <div id="footer">
+        <p class="footer-text ">
+        Усі мінусовки викладені виключно для ознайомлення.    © {% now "Y" %}    Українські мінусовки на minus.lviv.ua. Всі права захищено.
+        </p>
+    </div>
+
+</body>
+</html>
