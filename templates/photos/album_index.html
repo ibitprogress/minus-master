@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Фотоальбоми / {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+{% load pagination_tags %}
+{% autopaginate albums %}
+<div class="album">
+    <div class="photo-list">
+    {% for album in albums %}
+    {% if album.photo_set.all %}
+    <div class="shadowed photo-list-item">
+    <a class="link" href="{% url album_detail album.slug %}">
+    <img src="{{ album.get_cover_photo.get_thumbnail_url }}" alt="{{ album.name }}" />
+    {{ album.user.get_profile.fullname }}
+    </a>
+    </div>
+    {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% paginate %}
+
+{% endblock %}

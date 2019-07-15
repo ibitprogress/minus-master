@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Деталі запису / {{block.super}}{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/audioplayer/audio-player.js"></script>  
+     <script type="text/javascript">  
+             AudioPlayer.setup("{{MEDIA_URL}}js/audioplayer/player.swf", {  
+                width: 330,  
+                transparentpagebg: "yes", 
+                loader: "14740F",
+                animation: "no",
+         });  
+    </script>
+{% include 'albums/inline_audio_detail.html' %}
+
+    <script type="text/javascript">
+         $("a.vote").click(function(){
+            var votbtn = $(this);
+            var pk = parseInt(votbtn.parents('.ratings').attr('id'));
+            console.log(votbtn, pk);
+            $.get(votbtn.attr('href'),
+                function(data)
+                {
+                        $("#"+pk+"-r").html(data);
+                        $("#"+pk+"-ratingcount").text(parseInt($("#"+pk+"-ratingcount").text())+1);
+                        votbtn.addClass("active");
+                });
+             return false;
+         });
+
+    </script> 
+{% include 'shared/socials.html' %}
+{% load comments %}
+{% render_comment_list for object %}
+{% if request.user.is_authenticated %}
+{% render_comment_form for object %}
+{% endif %}
+{% endblock %}
+

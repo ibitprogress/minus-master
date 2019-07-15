@@ -1,0 +1,114 @@
+{% extends 'forum/forum_list.html' %}
+{% load ukrainian_date %}
+
+{% block title %}{{ thread.title|escape }} / {{ forum.title }} / {{ block.super }}{% endblock %}
+
+{% block forumnav %}
+    {{ block.super }}
+    {% for title, url in forum.get_url_name %}
+    &raquo; <a href='{{ url }}'>{{ title }}</a>
+    {% endfor %}
+    &raquo;
+    <a href='{{ thread.get_absolute_url }}'>{{ thread.title|escape }}</a> 
+{% endblock %}
+
+{% block content %}
+
+{% load pagination_tags %}
+{% autopaginate post_list 10 %}
+{% paginate %}
+
+<div class="forum-title">
+    <span>{{ thread.title }}</span>
+</div>
+
+<table id='forum-table'>
+{% for post in post_list %}
+
+<tr class="forum-table-columns">
+    <th class="column-title post-author">
+        <a href="{{ post.author.get_absolute_url }}">{{ post.author.get_profile.fullname|truncatewords:2 }}</a>
+    </th>
+    <th class="column-title post-date">
+        {{ post.time|postdate }}
+        {% if moderator %}
+        <p class="post-moderator-links">
+            <a href="{% url forum_edit_post post.id %}">Редагувати</a>
+            <a href="{% url forum_delete_post post.id %}">Видалити</a>
+        </p>
+        {% else %}
+        {% ifequal post.author request.user %}
+        <p class="post-moderator-links">
+            <a href="{% url forum_edit_post post.id %}"><img src="{{MEDIA_URL}}img/icons/pencil_go.png">Редагувати</a>
+        </p>
+        {% endifequal %}
+
+        {% endif %}
+    </th>
+</tr>
+
+<tr class="forum-table-items">
+
+    <td class="item-post-author" id="post{{ post.id }}">
+        {% if post.author.get_profile.avatar %}
+            <img src="{{ post.author.get_profile.avatar.url }}"/>
+            {% else %}
+            <img src="{{ MEDIA_URL }}avatars/default.png"/>
+        {% endif %}
+        <p class="user-is-{{post.author.get_profile.status_css}}">{{post.author.get_profile.status_title}}</p>
+        <ul class="item-post-author-info">
+            <li>Повідомлень: {{ post.author.forum_post_set.count }}</li>
+            {% if post.author.get_profile.country %}
+            <li>Звідки: {{ post.author.get_profile.city }}</li>
+            {% endif %}
+            <li>
+            <a href="{{ post.author.get_absolute_url }}">
+                <img src="{{ MEDIA_URL }}img/icons/user_gray.png"/>
+            </a>
+            <a href="{% url messages_compose_to post.author.username %}">
+                <img src="{{ MEDIA_URL }}img/icons/email.png"/>
+            </a>
+            </li>
+        </ul>
+    </td>
+
+    <td class="item-post">
+{% load sanity %}
+        {{ post.body|sanitize:"br p:style span:style a:href strong em s strike b i blockquote ul ol li img:src hr"|safe }}
+    </td>
+
+</tr>
+{% endfor %}
+</table>
+{% paginate %}
+
+{% if thread.closed %}
+<p class="item-info">Тема закрита, Ви не можете залишати тут повідомлення.</p>
+{% else %}
+{% if user.is_authenticated %}
+<p class="new-post-button">
+    <a href="{% url forum_reply_thread thread.id %}">Відповісти</a>
+</p>
+<p class="update-subscriptions-button">
+    <a href="{% url forum_subscriptions %}?next={{ request.path }}">Оновити Підписки</a>
+</p>
+{% else %}
+<p>Будь-ласка авторизуйтесь для того щоб залишати повідомлення.</p>
+{% endif %}
+{% endif %}
+
+{% endblock %}
+
+{% block quickgoto %}
+<div class="forum-goto">
+<form id="qjump" method="get" action="forum">{% csrf_token %}
+    <div><label>Перейти в:
+    <select name="id" id="forum_id" onchange="window.location=('{% url forum_index %}'+this.options[this.selectedIndex].value)">
+        {% for cat_forum in forums %}
+        <option value="{{ cat_forum.slug }}">{{ cat_forum.title }}</option>
+        {% endfor %}
+    </select>
+    </label></div>
+</form>
+</div>
+{% endblock %}

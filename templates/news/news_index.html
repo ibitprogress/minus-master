@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} {% endblock %}
+{% block content %}
+{% load comments %}
+{% if request.user.is_staff %}
+<span class="technical"> Ви — модератор, тож можете</span>
+<a class="btn inlbtn" href="{% url news_add %}">Додати новину</a>
+<hr/>
+{% endif %}
+{% load pagination_tags %}
+{% autopaginate object_list 10 %}
+{% for object in object_list %}
+            <div class="article-item">
+                <h4><a class="dynamic" href="{{object.get_absolute_url}}">{{object.title}}</a></h4>
+                {% if object.user == request.user or request.user.is_staff %}
+                <a class="right btn altbtn" href="{% url news_edit object.id %}">Редагувати</a>
+                {% endif%}
+                <div class="article-content">
+                {% load sanity %}
+                {{object.get_preview|sanitize:"em strong strike i b u "|safe|linebreaks|urlize}}
+                </div>
+                <div class="article-info">
+                    Дода{% if object.user.get_profile.gender == "female" %}ла{% else %}в{% endif %}: <a class="user dynamic" href="{{ object.user.get_profile.get_absolute_url }}" title="{{object.user.username}}">
+                            {{object.user.get_profile.fullname}}</a> {{object.pub_date|date:"d.m.Y"}}
+                    {% get_comment_count for object as comment_count%}
+                    {% if comment_count != 0%}<span class="technical">
+                    <a class="dynamic" href="{{object.get_absolute_url}}">Коментарі:{{comment_count}}</a></span>{% endif %}
+
+                </div>
+                <a class="dynamic" href="{{object.get_absolute_url}}" class="next-link">Читати далі &rarr;</a>
+            
+            </div>
+{% empty %}
+Новин немає
+{% endfor %}
+{% paginate %}
+{% endblock %}

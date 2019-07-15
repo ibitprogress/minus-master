@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Підписатись на розсилку / {{ block.super }}{% endblock %}
+
+{% block content %}
+<p>На цій сторінці ви можете підписатися на поштову розсилку, котра сповіщатиме вас про нові надходження мінусовок на сайт</p>
+<hr/>
+<form id="subscribtion-add-form" method="post" class="mform" action="">{% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    <tr><td><input type="submit" value="Підписатись" /></td></tr>
+    </table>
+</form>
+
+{% endblock %}

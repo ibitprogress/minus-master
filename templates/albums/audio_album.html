@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Аудіозаписи / {{block.super}}{% endblock %}
+
+{% block content %}
+{% load album_tags %}
+
+<h4> Аудіоальбом {{album.name}}</h4>
+<p class="technical">{{album.description}}</p>
+{% with album.audio_set.all as object_list %}
+{% include 'albums/album_audio.html' %}
+{% endwith %}
+<p>
+<a class="dynamic" href="{% url list_albums 'audio' album.user.username %}"><img src="{{MEDIA_URL}}img/icons/arrow_undo.png"/>До альбомів</a> |
+<a class="dynamic" href="{{ album.user.get_profile.get_absolute_url }}"><img src="{{MEDIA_URL}}img/icons/user_gray.png"/>Профіль користувача</a><br/>
+</p>
+{% if request.user == album.user %}
+<p class="technical">Сюди ви можете завантажувати записи власного виконання, або ті які вам належать</p>
+<a class="dynamic" class="link" href="{% url up_object_to_album 'audio' user.username album.slug %}"><img src="{{MEDIA_URL}}img/icons/sound_add.png"/>Завантажити запис</a>
+<a class="dynamic" class="link" href="{% url show_objects_album 'audio' user.username album.slug %}"><img src="{{MEDIA_URL}}img/icons/sound_delete.png"/>Редагувати</a>
+
+{% endif %}
+{% endblock %}
+

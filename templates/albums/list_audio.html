@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Редагувати Аудіозаписи - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="cat-album">
+<h4>Редагування аудіозаписів у альбомі {{album.name}}</h4>
+<ul>
+{% for object in object_list %}
+<li>
+
+Аудіо:<a href="{{object.file.url}}">{% if object.title %}"{{object.title}}"{% else %}"запис {{forloop.counter}}"{% endif %}</a>
+<a href="{% url edit_object "audio" object.pk %}"><img title="Редагувати" src="{{MEDIA_URL}}img/icons/pencil.png"/></a>
+<a href="{% url remove_object "audio" request.user.username object.pk %}"><img alt="Видалити" title="Видалити" src="{{MEDIA_URL}}img/icons/delete.png"/></a>
+<a href="{% url audiorec_to_minus object.pk %}"><img alt="Перенести у мінусовки" title="Перенести у мінусовки" src="{{MEDIA_URL}}img/icons/cd_go.png"/></a>
+</li>
+{% empty %}
+Поки що нічого нема
+{% endfor %}
+</div>
+{% if album.slug %}
+<a class="link" href="{% url up_object_to_album "audio" request.user.username album.slug %}">
+{% else %}
+<a class="link" href="{% url up_object "audio" request.user.username %}">
+
+{% endif %}
+<img src="{{MEDIA_URL}}img/icons/sound_add.png"/>Додати запис</a> 
+    </ul>
+    <hr/>
+    <a class="link" href="{{album.get_absolute_url}}"><img src="{{MEDIA_URL}}img/icons/arrow_undo.png"/>
+    До альбому</a>
+
+
+{% endblock %}
+

@@ -1,0 +1,4 @@
+{% if comments %}
+            <li><a class="dynamic" href="{% url comments_for user.username %}"><img src="{{MEDIA_URL}}img/icons/comments.png"/>Коментарі{% if num %}({{num}}){% endif %}
+        </a></li>
+{% endif %}

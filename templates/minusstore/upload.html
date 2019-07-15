@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}{% if edit %}Редагувати{% else %}Завантажити{% endif %} мінусовку / {{block.super}}{% endblock %}
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+
+{% if not edit %}
+    <link href="{{ MEDIA_URL }}css/swfup.css" rel="stylesheet" media="screen" type="text/css" />
+    <script src="{{ MEDIA_URL }}js/swfup/swfupload.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}js/swfup/plugins/swfupload.swfobject.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}js/swfup/fileprogress.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}js/swfup/handlers.js" type="text/javascript"></script>
+
+
+    {% endif %}
+
+
+{% if edit %}
+<h4>Редагування мінусовки</h4>
+{% else %}
+<h4>Завантажити мінусовку на сайт</h4>
+<span class="technical"><a href="{% url minus_mass_upload %}" class="link">Додати декілька файлів одразу</a></span>
+{% endif %}
+<p><a  class="link technical" href="/rules/">Правила порталу</a></p>
+
+<p>Ознайомтеся з правилами, та дотримуйтесь порядку при заповненні полів</p>
+<span id="spanButtonPlaceholder"></span>
+<input type="hidden" name="hidFileID" id="hidFileID" value="" />
+<form class="mform" id="minus_upload" action="{{request.path}}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+<div id="info"></div>
+<table id="minus_up_form">
+{% if form.errors %}
+<div class="errorlist">
+{{form.errors}}
+</div>
+{% endif %}
+{% for field in form.visible_fields %}
+            {% if forloop.first %}
+                {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+                {% endfor %}
+            {% endif %}
+<tr>
+<th>
+{{field.label_tag}}
+</th>
+<td>
+{% if field.errors %}
+<div class="errorlist">
+{% for e in field.errors%}
+{{e}}
+{% endfor %}
+</div>
+{% endif %}
+{{field}}<br>
+{{field.help_text}}
+{% if field.name == 'plusrecord' %}
+<br/>
+Ви можете вказати посилання на запис, або 
+<br/><a target="blank" class="link" href={% if edit %}{% url minus_plus_upload_user form.instance.user.id %}{% else %}{% url minus_plus_upload%}{%endif%} ><img src="{{MEDIA_URL}}img/icons/cd_go.png"/> 
+{% if edit and form.instance.up_plusrecord %}
+Змінити заванатежний запис | <a class="link" href="{% url plus_delete form.instance.up_plusrecord.id%}"><img src="{{MEDIA_URL}}img/icons/delete.png"/>
+Видалити його</a>
+
+{% else %}
+Завантажити плюсовку на сайт</a>
+{% endif %}
+
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+<tr>
+<th></th>
+<td>
+<div class="flash" id="fsUploadProgress"></div>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+{% if edit %}
+<input type="submit" value="Внести зміни" />
+<a href= "{% url minus_delete instance.user instance.id %}" class="btn altbtn">Видалити мінусовку</a>
+<a href= "{% url minus_to_audiorec instance.id %}" class="btn ">Перенести в записи</a>
+
+{% else %}
+<input type="submit" id="btnSubmit" value="Завантажити" />
+{% endif %}
+</td>
+</tr>
+</table>
+
+</form>
+
+
+<script type="text/javascript">
+		var swfu;
+			swfu = new SWFUpload({
+				// Backend settings
+				upload_url: "{% url minus_flash_upload %}",
+				file_post_name: "file",
+
+				// Flash file settings
+				post_params: {"session_key" : "{{request.session.session_key}}"},
+				file_size_limit : "{{settings.MAX_FILE_SIZE}} b",
+				file_types : "{{exts}}",
+				file_types_description : "All Files",
+				file_upload_limit : 0,
+				file_queue_limit : 1,
+
+				// Event handler settings
+				swfupload_loaded_handler : swfUploadLoaded,
+				
+				file_dialog_start_handler: fileDialogStart,
+				file_queued_handler : SinglefileQueued,
+				file_queue_error_handler : fileQueueError,
+				file_dialog_complete_handler : fileDialogCompleteDummy,
+				
+				//upload_start_handler : uploadStart,	// I could do some client/JavaScript validation here, but I don't need to.
+				upload_progress_handler : uploadProgress,
+				upload_error_handler : uploadError,
+				upload_success_handler : singleUploadSuccess,
+				upload_complete_handler : singleUploadComplete,
+
+				// Button Settings
+				button_placeholder_id : "id_file",
+
+				
+				button_image_url: "{{MEDIA_URL}}/img/swfupbtn.png",
+				button_width: "82",
+				button_height: "29",
+				button_text: '<span class="theFont">Вибрати</span>',
+				button_text_style: ".theFont { font-size: 12; color:#FFFFFF; font-family:sans; }",
+				button_text_left_padding: 12,
+				button_text_top_padding: 3,
+				// Flash Settings
+				flash_url : "{{ MEDIA_URL }}js/swfup/Flash/swfupload.swf",
+
+				custom_settings : {
+					progress_target : "fsUploadProgress",
+					upload_successful : false
+				},
+				
+				// Debug settings
+				debug: false
+			});
+
+	</script>
+{% endblock %}

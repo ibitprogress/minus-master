@@ -1,0 +1,25 @@
+<div class="album">
+    {% if album and album.photo_set.all %}
+    <div class="photo-list">
+    {% for photo in album.photo_set.all %}
+    <div class="shadowed photo-list-item">
+        
+        <a class="inline" href="{{ photo.image.url }}" rel="album">
+            <img class="album-photo" src="{{ photo.get_thumbnail_url }}" alt="{{ photo.title }}" />
+        </a>
+        <a title="Деталі фото" class="link" href="{{ photo.get_absolute_url }}">
+                {{ photo.title|truncatewords:"4"|wordwrap:"10" }}
+        </a>
+
+        {% ifequal request.user photo.album.user %}
+            <a href="{% url photo_edit photo.album.slug photo.id %}"><img alt="Редагувати" title="Редагувати" src="{{MEDIA_URL}}img/icons/pencil_go.png"/></a>
+            <a href="{% url photo_delete photo.album.slug photo.id %}"><img alt="Видалити" title="Видалити" src="{{MEDIA_URL}}img/icons/cancel.png"/></a>
+        {% endifequal %}
+    </div>
+    {% endfor %}
+    </div>
+    {% else %}
+    <p>Фото немає. </p>
+    {% endif %}
+</div>
+

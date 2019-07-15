@@ -1,0 +1,31 @@
+{% extends 'forum/forum_list.html' %}
+
+{% block title %}Редагування теми {{ thread.title }}{% endblock %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block forumnav %}
+    {{ block.super }}
+    {% for title, url in thread.forum.get_url_name %}
+    &raquo; <a href='{{ url }}'>{{ title }}</a>
+    {% endfor %}
+    &raquo;
+    <a href="{{ thread.get_absolute_url }}">{{ thread.title }}</a>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="forum-title">
+    <span>Редагування теми {{ thread.title }}</span>
+</div>
+
+<form id="forum-thread-edit" method='post' action='./'>{% csrf_token %}
+{% if form.errors %}<ul>{{ form.errors.as_ul }}</ul>{% endif %}
+{{ form.as_p }}
+<p><input type='submit' value='Зберегти' /></p>
+</form>
+
+{% endblock %}

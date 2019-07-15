@@ -1,0 +1,8 @@
+        <a class="dynamic" href="{% url blurbs_filter  %}?category={{object.category.slug}}">{{object.category}}</a> /
+                <a class="dynamic" href="{% url blurbs_filter %}?category={{object.category.slug}}&buysell={{object.buysell}}">{{object.get_buysell_display}}</a> /
+                {% if object.georegion %}
+                <a class="dynamic" href="{% url blurbs_filter %}?category={{object.category.slug}}&buysell={{object.buysell}}&georegion={{object.georegion.id}}">{{object.georegion}}</a> 
+                {% if object.geocity %}/
+                <a class="dynamic" href="{% url blurbs_filter %}?category={{object.category.slug}}&buysell={{object.buysell}}&georegion={{object.georegion.id}}&geocity={{object.geocity.id}}">{{object.geocity}}</a> 
+                {% endif %}
+                {% endif %}

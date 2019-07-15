@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Аудіоальбоми користувача {{album_user.get_profile.fullname}} / {{block.super}}{% endblock %}
+
+{% block content %}
+<h4>Аудіоальбоми користувача {{album_user.get_profile.fullname}}</h4>
+<ul>
+{% for object in object_list %}
+<li>
+    <a class="dynamic link" href="{{object.get_absolute_url}}"><img src="{{MEDIA_URL}}img/icons/cd.png"/>
+    {{ object.name}}<span class="technical">({{object.audio_set.count}})</span></a> {% ifequal object.user request.user %}<a class="dynamic" href="{% url edit_album 'audio' object.user.username object.pk %}"><img src="{{MEDIA_URL}}img/icons/pencil.png" title="Редагувати"/>
+    </a><a href="{% url remove_album 'audio' object.user.username object.pk %}"><img src="{{MEDIA_URL}}img/icons/delete.png" title="Видалити"/>
+    </a>{% endifequal %}
+    </li>
+{% empty %}
+Альбомів поки немає
+{% endfor %}
+</ul>
+<a class="dynamic link" href="{{ album_user.get_profile.get_absolute_url }}"><img src="{{MEDIA_URL}}img/icons/arrow_undo.png"/>Назад</a><br/>
+{% ifequal album_user request.user %}
+<br/>
+<a class="dynamic link" href="{% url create_album 'audio' request.user.username %}"><img src="{{MEDIA_URL}}img/icons/cd_add.png"/>Створити альбом</a>|<a class="link" href="{% url up_object "audio" request.user.username %}">
+<img src="{{MEDIA_URL}}img/icons/sound_add.png"/>Завантажити запис</a> 
+{% endifequal %}
+
+{% endblock %}
+

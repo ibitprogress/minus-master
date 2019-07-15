@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Скринька коментарів користувача {{user.get_profile.fullname}}{% endblock %}
+{% block content %}
+{% load pagination_tags %}
+{% autopaginate comments %}
+{% for comment in comments %}
+
+    <div class="{% if not comment.is_seen %}new {% endif %}comment">
+{% load sanity %}
+        <div class="comment_author ">Написав <a class="dynamic user link" href="{{comment.comment.user.get_absolute_url}}" title="{{comment.comment.user.username}}">{{comment.comment.user.get_profile.fullname}}</a>:</div> <br/>
+        <blockquote>
+        <p class="comment_body">
+        {{comment.comment.comment|urlize|linebreaks|sanitize:"p blockquote span:style ul li ol i strike strong b em u a:href pre br "|safe}}
+        </p>
+</blockquote>
+        <div class="technical">До запису <a class="dynamic link" href="{{comment.content_object.get_absolute_url}}">{{comment.content_object}}</a>
+    </div>
+    <hr/>
+    </div>
+    <br/>
+{% endfor %}
+{% paginate %}
+{% endblock %}

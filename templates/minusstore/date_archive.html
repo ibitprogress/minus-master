@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Останні надходження{% endblock %}
+{% block content %}
+  {% if day %}
+    {% load ukrainian_date %}
+    <h4>Записи завантажені {{ day|birthdate}}</h4>
+  {% else %}
+      {% if month %}
+        <h4>Архів за {{ month|date:"F Y" }} року</h4>
+      {% else %}
+          {% if year %}
+            <h4>Архів за {{year}} рік</h4>
+          {% endif %}
+    {% endif %}
+  {% endif %}
+  <hr/>
+{% if month %}
+{% load gencal %}
+<div id="archcalendar" class="calendar shadowed">
+{% comment %} FIXME This is weird!!! but it works instead
+of pointing minuses{% endcomment %}
+{% gencal "" year month.month %}
+<div class="calendar_nav">
+<a class="dynamic" href="{% url minus_archive_month year prevmonth %}">←</a>
+{{month|date:"F"}}
+<a class="dynamic" href="{% url minus_archive_month year nextmonth %}">→</a>
+<br/>
+<a class="dynamic" href="{% url minus_archive_month prevyear month.month %}">←</a>
+{{month|date:"Y"}}
+<a class="dynamic" href="{% url minus_archive_month nextyear month.month %}">→</a>
+
+</div>
+{% load pytils_numeral %}
+<p>За цей період, на сайт було завантажено <span class="rating">{{minuses|length}}</span> {{minuses|length|choose_plural:"мінусовку,мінусовки,мінусовок"}}.
+</p>
+</div>
+<div class="shadow"></div>
+{% endif %}
+<ul class="minus_list">
+{% load pagination_tags %}
+{% autopaginate minuses %}
+{% for minus in minuses %}
+<li>
+<h4 class="min_author">{{minus.author}}</h4>
+<a class="dynamic" href="{{minus.get_absolute_url}}"><h5 class="min_rec">{{minus.title}}</h5></a>
+<table class="technical info">
+    <tr>
+        <td>
+            <dl>
+                <dt>Тип файлу: </dt><dd>{{ minus.type }}</dd>
+            </dl>
+            {% if minus.bitrate %}
+            <dl>
+                <dt>Бітрейт: </dt>
+                <dd>{{ minus.bitrate }}</dd>
+            </dl>
+            {% endif %}
+            <dl>
+                <dt>Розмір файлу: </dt>
+                <dd>{{ minus.filesize|filesizeformat }}</dd>
+            </dl>
+            <dl>
+                <dt>Властивості:</dt>
+                            <dd>
+                            {{ minus.get_tempo_display }},
+                            {% if minus.is_amateur %}Аматорська,{% endif %}
+                            {% if minus.is_ritual %}Обрядова,{% endif %}
+                            {% if minus.is_childish %}Дитяча{% endif %}
+                            </dd>
+                </dl>
+        </td>
+        <td>
+
+                <dl class="tright">
+                    <dt>Мінусовку додав:</dt><br/>
+                    <dd><a class="dynamic" href="{{ minus.user.get_absolute_url}}">{{minus.user.get_profile.fullname}}</a></dd><br/>
+                    <dd>{{minus.pub_date|birthdate}}</dd><br/>
+                    <dd class="right rating">Рейтинг:{{minus.rating.score}}</dd>
+                </dl>
+        </td>
+    </tr>
+</table>
+<hr/>
+</li>
+{% endfor %}
+{% paginate %}
+{% endblock %}

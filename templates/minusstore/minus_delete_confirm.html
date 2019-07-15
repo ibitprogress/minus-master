@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Видалення мінусовки {{minus.author}} - {{ minus.title }} / {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h3>Ви впевненні що хочете видалити запис {{minus.author}} -  {{ minus.title }}?</h3>
+<p class="technical">Ця дія є невідновною</p>
+
+<form id="id_photo_delete" method="post" action="">{% csrf_token %}
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="Так, видалити її">
+</form>
+<hr/>
+<p><a href="{{ minus.get_absolute_url }}">Ні, повернутися назад</a></p>
+
+{% endblock %}

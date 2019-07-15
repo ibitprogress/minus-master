@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Виконавці / {{block.super}}{% endblock %}
+
+{% block extrahead %}
+{% if request.user.is_authenticated %}
+<script src="{{MEDIA_URL}}js/js_audio_player/player_ajax_author.js" type="text/javascript" charset="utf-8"></script>
+{% endif %}
+
+    <script type="text/javascript" charset="utf-8">
+     $(document).ready(function(){
+
+        //load reccords by author into specified dif
+        function loadrec(author, recdiv, letter, type, t_class)
+        {
+            if (!type){var type = $(".type_btn.active").attr("id")};
+            if (!t_class){var t_class = $(".class_btn.active").attr("id")};
+            
+            recdiv.html("<img src=\"{{MEDIA_URL}}img/loader.gif\">");
+            recdiv.show("fast");
+            author = encodeURIComponent(author);
+            letter = encodeURIComponent(letter);
+            $.get("/minus/artist/"+author+"/ajax/type="+type+"&let="+letter+"&class="+t_class,
+                function(data)
+                {
+                    recdiv.hide();
+                    recdiv.html(data);
+                    recdiv.show("slow");
+                });
+        }
+
+        //initial folk loading
+        loadrec("Народна", $("#folk"), "{{letter}}");
+        $(".author").click(function(){
+
+
+            $(".current").removeClass("current");
+            $(this).addClass("current");
+            var recdiv = $(".current + .rec");
+            if (recdiv.hasClass("open"))
+            {
+                recdiv.removeClass("open");
+                recdiv.hide("slow");
+            }
+            else
+            {
+                recdiv.addClass("open");
+                var author = $(this).text();
+                loadrec(author, recdiv, "");
+            };
+            return false;
+        });
+        
+        //toggle button and reload songs with changing params
+        function btn(btn)
+        {
+            var clas = btn.attr("class");
+            $("."+clas).removeClass("active");
+            btn.addClass("active");
+            //gather class and type
+            var type = $(".type_btn.active").attr("id");
+            var t_class = $(".class_btn.active").attr("id");
+            var c_selector = '.author'
+            if (type != ""){c_selector+='.'+type} ;
+            if (t_class != ""){c_selector+='.'+t_class} ;
+            console.log(c_selector);
+            $(".author").parents("li").fadeOut("fast");
+            $(c_selector).parents("li").fadeIn("slow");
+            setTimeout(function(){
+                $(".open").each(function (i)
+                {
+                    if($(this).parents("li").css("display") != "none")
+                    {
+                        var author = this.title;
+                        loadrec(author, $(this), "");
+                    };
+                });
+            }, 300);
+            loadrec("Народна", $("#folk"), "{{letter}}", type, t_class);
+        }
+
+        $(".type_btn").click(function(){
+            btn($(this));
+            return false;
+        });
+
+        $(".class_btn").click(function(){
+            btn($(this));
+            return false;
+        });
+
+
+     });
+
+    </script>
+{% endblock %}
+
+{% block subheader %}
+
+<div class="archive_btns libuttons">
+<ul class="types">
+<span>Тип:</span><li class="shadowed"><a  class="active type_btn" id="" href="#">Всі</a></li>{% for type in types %}<li class="shadowed"><a  class="type_btn" id="{{type.type_name}}" href="#">{{type.display_name}}</a></li>{% endfor %}
+</ul>
+<ul class="classes">
+<span>Каталог:</span><li class="shadowed"><a href="#" class="active class_btn">Все</a></li><li class="shadowed"><a href="#" class="class_btn" id="regular">Українські мінусовки</a></li><li class="shadowed"><a href="#" class="class_btn" id="alternative">Інші записи</a></li>
+</ul>
+
+</div>
+{% endblock %}
+{% block content %}
+            <object id="smallFlash" type="application/x-shockwave-flash" data="{{MEDIA_URL}}/js/js_audio_player/player_mp3_js.swf" width="1" height="1">
+                <param name="movie" value="{{MEDIA_URL}}/js/js_audio_player/player_mp3_js.swf" />
+                <param name="AllowScriptAccess" value="always" />
+                <param name="FlashVars" value="listener=myListener&amp;interval=500" />
+            </object>
+<div id="minus_catalogue">
+<h3 class="catalogue">Виконавці:</h3>
+    <ul class="authors">
+    {% load minusstore_tags %}
+    {% for author in authors %}
+        <li>
+        {% if request.user.is_staff %}<a title="редагувати в адмін-панелі" href="{% edit_object author %}"><img src="{{MEDIA_URL}}img/icons/layout_edit.png"/></a>{% endif %}
+        <a class="author {% for type in author.filetypes.all%}{{type.type_name}} {%endfor%} {%if author.has_alternative%}alternative{%endif%} {% if author.has_regular%}regular{%endif%}"  href="#">{{author.name}}</a>
+        <div title="{{author.name}}" class="info rec"></div>
+        </li>
+
+    {% endfor %}
+    </ul>
+<hr/>
+<h3 class="catalogue">Народні композиції:</h3>
+<div id="folk" class="info" title="Народна">
+</div>
+
+</div>
+{% endblock %}
+

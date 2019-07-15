@@ -1,0 +1,86 @@
+{% extends 'forum.html' %}
+{% load ukrainian_date %}
+
+{% block title %}
+Форум / {{ block.super }}
+{% endblock %}
+
+{% block extrahead %}
+<link rel="alternate" type="application/rss+xml" title="All Latest Posts via RSS" href="{% url forum_index %}rss/" />
+<link rel="alternate" type="application/atom+xml" title="All Latest Posts via ATOM" href="{% url forum_index %}atom/" />
+{% endblock %}
+
+{% block forumnav %}
+    <a href='/'>Головна сторінка</a>
+    &raquo;
+    <a href='{% url forum_index %}'>Список форумів</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="forum-title">
+    <span>Список форумів</span>
+</div>
+
+<table id="forum-table">
+
+<tr class="forum-table-columns">
+    <th class="column-title"></th>
+    <th class="column-title">Розділ</th>
+    <th class="column-title column-threads">Тем</th>
+    <th class="column-title column-posts">Повідомлень</th>
+    <th class="column-title">Остання відповідь</th>
+</tr>
+
+{% for forum in object_list %}
+<tr class="forum-table-items">
+    <td class="item-forum-icon">
+        <img src="{{ MEDIA_URL }}img/forum/forum-new.png" />
+    </td>
+
+    <td class="item-forum-title">
+        <a href='{{ forum.get_absolute_url }}'>{{ forum.title|capfirst|safe }}</a>
+        <p class="item-forum-description">{{ forum.description }}</p>
+    </td>
+
+    <td class="item-threads-count">
+        <span>{{ forum.threads }}</span>
+    </td>
+
+    <td class="item-posts-count">
+        <span>{{ forum.posts }}</span>
+    </td>
+
+    <td class="item-forum-latest">
+        <span>
+        {% if forum.forum_latest_post %}
+        <a href="{{ forum.forum_latest_post.get_absolute_url }}">
+            {{ forum.forum_latest_post.thread.latest_post_time|postdate }}
+        </a>
+        <br />
+        Тема:
+        <a href="{{ forum.forum_latest_post.get_absolute_url }}">
+            {{ forum.forum_latest_post.thread|striptags|truncatewords:2 }}
+        </a>
+        <br />
+        Автор:
+        <a href="{{ forum.forum_latest_post.author.get_absolute_url }}">
+        {{ forum.forum_latest_post.author.get_profile.fullname|truncatewords:2 }}
+        </a>
+        {% else %}
+        Жодної відповіді
+        {% endif %}
+        </span>
+    </td>
+
+</tr>
+{% endfor %}
+</table>
+
+{% if request.user.is_authenticated %}
+    <div class="update-subscriptions-button">
+        <a href="{% url forum_subscriptions %}">Оновити підписки</a>
+    </div>
+{% endif %}
+
+{% endblock %}

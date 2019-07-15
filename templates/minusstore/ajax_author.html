@@ -1,0 +1,23 @@
+{% if minuses %}
+{% load ukrainian_date %}
+<ul class="minus_inline_list">
+{% for minus in minuses %}
+    <li class="minusrec{% if minus.alternative %} alternative{%endif%}"><a class="dynamic" href="{{minus.get_absolute_url}}">{{minus.title}}</a>
+    {% if request.user.is_authenticated and minus.type.type_name == "audio" %}
+    <a id="{{minus.id}}-btn" href="javascript:play({{minus.id}})"><img src="{{MEDIA_URL}}img/icons/control_play.png"/>
+    </a>
+    {% endif %}
+     <span class="stats">({{minus.type}}) {{minus.filesize|filesizeformat}} {% if minus.bitrate %} {{minus.bitrate}}Кбіт/с {% endif %} завантажено <a href="{{minus.user.get_profile.get_absolute_url}}">
+    {{minus.user.get_profile.fullname}}</a> {{minus.pub_date|date:"d.m.Y"}}{% ifequal request.user.username minus.user.username %} <a href="{% url minus_edit request.user.username minus.id %}"><img src="{{MEDIA_URL}}img/icons/pencil_go.png" alt="редагувати"/></a> 
+    {% comment %}
+    FIXME
+    {% endcomment %}
+    {% else %}
+{% if request.user.is_staff %} <a href="{% url minus_edit request.user.username minus.id %}"><img src="{{MEDIA_URL}}img/icons/pencil_go.png" alt="редагувати"/></a> {% endif%}
+{% endifequal %}
+</span>
+
+    </li>
+{% endfor %}
+</ul>
+{% else %}{% endif %}

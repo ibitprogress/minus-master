@@ -1,0 +1,15 @@
+{% load ukrainian_date %}
+                 Тип файлу:  {{ obj.type }}<br>
+            {% if obj.bitrate %}
+                 Бітрейт:  
+                 {{ obj.bitrate }} <br>
+            {% endif %}
+                 Розмір файлу:  
+                 {{ obj.filesize|filesizeformat }} <br>
+            {% if obj.length %}
+                 Тривалість:  
+                 {{ obj.length|time:"i:s" }} <br>
+            {% endif %}
+                     Мінусовку додав: <a title={{obj.user.username}} href="{% url user_profile obj.user.username %}">{{obj.user.get_profile.fullname}}</a> 
+                     {{obj.pub_date|birthdate}}
+                 

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ photo.title }} / {{ photo.album.name }} / {{ block.super }}
+{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/vote_photo.js"></script>
+{% endblock %}
+
+{% block subheader %}
+
+    <div>
+    <a class="dynamic link" href="{{ photo.album.get_absolute_url }}"><img src="{{MEDIA_URL}}img/icons/arrow_undo.png"/>Назад до альбому</a> 
+    </div>
+
+{% endblock %}
+
+{% block content %}
+    <h5>{{ photo.title }}</h5>
+
+<div class="photo">
+    <p class="photo-image">
+    <img src="{{ photo.image.url }}" alt="{{ photo.title }}" />
+        {% ifequal request.user photo.album.user %}
+            <hr/>
+            <a class="link" href="{% url photo_edit photo.album.slug photo.id %}"><img alt="Редагувати" title="Редагувати" src="{{MEDIA_URL}}img/icons/pencil_go.png"/>Змінити</a>
+            <a class="link" href="{% url photo_delete photo.album.slug photo.id %}"><img alt="Видалити" title="Видалити" src="{{MEDIA_URL}}img/icons/cancel.png"/>Видалити</a>
+        {% endifequal %}
+    {% if photo.description %}
+        <h6>Опис:</h6>
+        <blockquote class="photo-description">
+            {{ photo.description }}
+        </blockquote>
+    {% endif %}
+        {% load voting_tags %}
+        {% score_for_object photo as score %}
+    <h6>Оцінка</h6>
+    <span class="rating" id="score_{{ photo.id }}">{{ score.score }}</span>
+    <span class="technical">(Голосів:
+        <span id="num_votes_{{ photo.id }}">{{ score.num_votes }}</span>
+    )</span>
+        </p>
+    <p>
+    <span class="vote_button"><a class="vote" href="#upvote" onclick="vote('{{ photo.id }}', 'upvote')">+</a></span>
+    <span class="vote_button"><a class="vote" href="#downvote" onclick="vote('{{ photo.id }}', 'downvote')">–</a></span>
+    </p>
+</div>
+
+{% endblock %}

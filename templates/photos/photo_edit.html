@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагування фото / {{ block.super }}{% endblock %}
+
+{% block content %}
+<form id="id_photo_edit" action="" method="post">{% csrf_token %}
+<ul>
+    {{ form.as_ul }}
+    <li><input type="submit" value="Зберeгти" /></li>
+</ul>
+    <p><a href="../delete">Видалити фото</a></p>
+</form>
+{% endblock %}

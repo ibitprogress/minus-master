@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+        {% block description %}
+        Оголошення: {{object.title}} ({{object.get_buysell_display}})
+        {{object.description|striptags|truncatewords:10}}
+        {{request.get_host}}
+        {% endblock %}
+
+{% block title %}{{object.title}} - {{block.super}}{% endblock %}
+
+{% block extrahead %}
+{% endblock %}
+
+
+{% block content %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/plugins/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/plugins/fancybox/minus.photo.album.js"></script>
+<link rel="stylesheet" href="{{ MEDIA_URL }}js/plugins/fancybox/jquery.fancybox-1.3.1.css" type="text/css" media="screen">
+            <div class="article-info">
+                {% if request.user == object.user or request.user.is_staff %}
+                
+                <a href="{% url blurb_edit object.id %}" class="btn altbtn right">Редагувати</a>
+                {% endif %}
+                        Додав: <a class="dyamic user" href="{{ object.user.get_profile.get_absolute_url }}">{{object.user.get_profile.fullname}}</a><span class="technical"> | {{object.pub_date|date:"d.m.Y"}}</span>
+
+            </div>
+            <div class="article-item">
+                <h4>{{object.title}}</h4>
+                <div class="blurb-header">
+                {% include 'blurbs/nav_line.html' %}
+                </div>
+                <div class="article-content">
+                {% load sanity %}
+                {{object.description|safe}}
+                </div>
+            
+            <br/><br/>
+            {% load albums %}
+            {% if request.user == object.user %}
+                <a href="{% get_album_url_for_obj object %}"><img src="{{MEDIA_URL}}img/icons/photo_add.png"/>
+                Додати/редагувати фото</a>
+            {% endif %}
+            {% render_photo_album_for object %}
+            </div>
+            {% include "shared/socials.html" %}
+            <div class="comments">
+            {% load comments %}
+            {% render_comment_list for object %}
+            {% if request.user.is_authenticated %}
+            {% render_comment_form for object %}
+            {% endif %}
+            </div>
+{% endblock %}
+
+

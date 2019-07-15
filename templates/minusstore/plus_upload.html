@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Завантажити плюсовку / {{block.super}}{% endblock %}
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<h4>Завантажити плюсовку на сайт</h4>
+<p>Завантажені записи розміщуються виключно у ознайомчих цілях. Відповідальність за них несуть користувачі, що їх розмістили.</p>
+<form class="mform" id="minus_plus_upload" action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+<div id="info"></div>
+<table id="plus_up_form">
+{{ form.as_table }}
+<tr>
+<td>
+</td>
+<td>
+<input type="submit" id="btnSubmit" value="Завантажити" />
+</td>
+</tr>
+</table>
+
+</form>
+{% endblock %}

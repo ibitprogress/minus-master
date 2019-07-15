@@ -1,0 +1,10 @@
+Привіт {{ message.recipient.get_profile.fullname }},
+
+Ви отримали повідомлення від {{ message.sender.get_profile.fullname }}:
+
+Перейдіть по лінку для перегляду {{ site_url }}{% url messages_detail message.pk %}
+
+--
+Українські мінусовки {{ site_url }}
+Вхідні: {{ site_url }}{% url messages_inbox %}
+Відповісти: {{ site_url }}{% url messages_reply message.pk %}     

@@ -1,0 +1,45 @@
+{% extends "messages/base.html" %} 
+{% block content %}
+<h4>Вхідні</h4>
+{% if message_list %} 
+{% load pagination_tags %}
+{% autopaginate message_list 10 %}
+<div class="messages">
+{% for message in message_list %} 
+    <table class="message {% if message.new %}new{% else %}shadowed{%endif%}">
+    <tbody>
+    <tr class="firstrow">
+        <td rowspan=2>
+            <img class="avatar" src="
+            {% if message.sender.get_profile.avatar %}
+            {{ message.sender.get_profile.avatar.url }}
+            {% else %}
+            {{ MEDIA_URL }}avatars/default.png
+            {% endif %}
+            " alt="avatar" />
+        </td>
+        
+        <td class="sender"><a class="dynamic" href="{{message.sender.get_absolute_url}}"><h5>{{ message.sender.get_profile.fullname }}</h5></a><br/>
+        <span class="technical">({{message.sender.get_profile.status_title}})</span>
+        </td>
+        <td class="msgbody" rowspan=2>
+            <a class="dynamic" href="{{message.get_absolute_url }}"><h6>{{ message.subject }}</h6>
+            {% load sanity %}
+            {{message.body|sanitize:"p i strong em b u br"|safe|truncatewords:"16"}}
+</a>
+        </td>
+        <td><a class="dynamic link" href="{% url messages.views.reply message.id %}">Відповісти</a></td>
+    </tr>
+    <tr class="secondrow">
+        <td class="technical">{{message.sent_at|date:"d.m.Y"}}</td>
+        <td><a class="link" href="{% url messages.views.delete message.id %}">Видалити</a></td>
+    </tr>
+    </table>
+    </tbody>
+{% endfor %}
+</div>
+{% paginate %}
+{% else %}
+<p>Порожньо</p>
+{% endif %}  
+{% endblock %}

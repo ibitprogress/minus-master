@@ -1,0 +1,40 @@
+{% if object_list %}
+<div class="cat-header">
+                            <span class="right">Всього:
+                            <span class="current">{{object_list|length}}</span></span>
+</div>
+                        <div class="cat-album">
+
+<script type="text/javascript" src="{{MEDIA_URL}}js/audioplayer/audio-player.js"></script>  
+     <script type="text/javascript">  
+             AudioPlayer.setup("{{MEDIA_URL}}js/audioplayer/player.swf", {  
+                width: 330,  
+                transparentpagebg: "yes", 
+                loader: "14740F",
+                animation: "no",
+         });  
+    </script>
+{% for object in object_list %}
+{% include 'albums/inline_audio_detail.html' %}
+{% endfor %}
+    <script type="text/javascript">
+         $("a.vote").click(function(){
+            var votbtn = $(this);
+            var pk = parseInt(votbtn.parents('.ratings').attr('id'));
+            console.log(votbtn, pk);
+            $.get(votbtn.attr('href'),
+                function(data)
+                {
+                        $("#"+pk+"-r").html(data);
+                        $("#"+pk+"-ratingcount").text(parseInt($("#"+pk+"-ratingcount").text())+1);
+                        votbtn.addClass("active");
+                });
+             return false;
+         });
+
+    </script> 
+{% else %}
+Порожньо
+<br/>
+{% endif %}
+</div>

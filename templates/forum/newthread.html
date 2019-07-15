@@ -1,0 +1,39 @@
+{% extends 'forum/forum_list.html' %}
+
+{% block title %}Створення нової теми в {{ forum.title }} / {{ block.super }}{% endblock %}
+
+{% block extrahead %}
+<link rel="alternate" type="application/rss+xml" title="{{ forum.title }} Posts via RSS" href="{% url forum_index %}rss/{{ forum.slug }}/" />
+<link rel="alternate" type="application/atom+xml" title="{{ forum.title }} Posts via ATOM" href="{% url forum_index %}atom/{{ forum.slug }}/" />
+{{ form.media }}
+{% endblock %}
+
+
+
+{% block forumnav %}
+    {{ block.super }}
+    &raquo;
+    Нова Тема
+{% endblock %}
+
+{% block content %}
+
+<div class="forum-title">
+    <span>Створення нової теми в {{ forum.title }}</span>
+</div>
+    
+<form id="id_newthread" method='post' action='./'>{% csrf_token %}
+    {% if form.errors %}
+    <ul>
+        {{ form.errors.as_ul }}
+    </ul>
+    {% endif %}
+    {{ form.as_p }}
+    <p>
+        <input type='submit' value='Зберегти' />
+    </p>
+        <a href="{% url forum_thread_list forum.slug %}">Повернутися до списку тем</a>
+    </p>
+</form>
+
+{% endblock %}

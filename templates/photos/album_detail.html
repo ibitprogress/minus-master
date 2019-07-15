@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Фотоальбом {{ablum.content_object}} / {{ block.super }}
+{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/plugins/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/plugins/fancybox/minus.photo.album.js"></script>
+<link rel="stylesheet" href="{{ MEDIA_URL }}js/plugins/fancybox/jquery.fancybox-1.3.1.css" type="text/css" media="screen">
+{% endblock %}
+
+
+{% block content %}
+<h4>Фотоальбом: {{album.content_object }}</h4>
+    
+<p>
+<a class="dynamic" href="{{ album.content_object.get_absolute_url }}"><img src="{{MEDIA_URL}}img/icons/arrow_undo.png"/>Назад</a><br/>
+{% ifequal request.user album.user %}
+<a class="dynamic" href="{% url photo_add album.slug %}"><img src="{{MEDIA_URL}}img/icons/photo_add.png"/>Додати фото</a> <span class="technical">(Розмір альбому: {{ album.size|filesizeformat }})</span>
+{% endifequal %}
+</p>
+{% comment %} little messy because it was remade 
+also possible to show album via albums tag render_photo_album_for_object
+{% endcomment %}
+{% include 'photos/album_photo.html' %}
+
+
+{% endblock %}
+
+
+{% if request.user.is_authenticated %}
+{% block sidebar %}
+<ul id="photo-menu" class="menu">
+    <h5 class="menu-title">Фотоальбом</h5>
+    <li>Розмір альбому: {{ album.size|filesizeformat }}</li>
+    <li><a class="dynamic" href="{% url album_edit album.slug %}">Редагувати фотоальбом</a></li>
+</ul>
+{% endblock %}
+{% endif %}

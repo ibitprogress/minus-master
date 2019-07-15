@@ -1,0 +1,26 @@
+{% extends "messages/base.html" %} 
+{% load i18n %} 
+{% block content %}
+<h4>{{message.subject}}</h4>
+<p class="technical">Від: <a class="dynamic" href="{{message.sender.get_profile.get_absolute_url}}">
+{{ message.sender.get_profile.fullname }}</a><sup class="{{message.sender.get_profile.status_css}}"> ({{message.sender.get_profile.status_title}})</sup>
+{{ message.sent_at|date:_("DATETIME_FORMAT")}}<br/>
+</p>
+<div class="msg shadowed">
+            <img style="float:left;" class="avatar" src="
+            {% if message.sender.get_profile.avatar %}
+            {{ message.sender.get_profile.avatar.url }}
+            {% else %}
+            {{ MEDIA_URL }}avatars/default.png
+            {% endif %}
+            " alt="avatar" />
+{% load sanity %}
+{{ message.body|sanitize:"p blockquote span:style font:color:size ul li ol i strike strong b em u a:href pre br img:src"|safe}}<br /><br />
+</div>
+<div class="shadow"></div>
+{% ifequal message.recipient.pk user.pk %}
+
+<a class="dynamic" class="link" href="{% url messages_reply message.id %}"><img src="{{MEDIA_URL}}img/icons/email_go.png"/>Відповісти</a>
+{% endifequal %}
+<a class="dynamic" class="link" href="{% url messages_delete message.id %}"><img src="{{MEDIA_URL}}img/icons/email_delete.png"/>Видалити</a>
+{% endblock %}

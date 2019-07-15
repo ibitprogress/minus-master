@@ -1,0 +1,16 @@
+<p>
+{{ body }}
+</p>
+{% if records %}
+{% for record in records %}
+<p><a href="{{site_url}}{{ record.get_absolute_url }}">{{ record.author }} - {{ record.title }} ({{ record.type.display_name }})</a></p>
+{% endfor %}
+{% else %}
+<p>За період на котрий ви підписані не було додано жодної мінусовки</p>
+{% endif %}
+<br />
+{{ banner|safe }}
+<br />
+----------------------------
+<br />
+<p>Щоб змінити параметри підписки, або скасувати її, перейдіть за посиланням:<br /><a href="{{ site_url }}{{ subscriber_url }}">{{ site_url }}{{ subscriber_url }}</a></p>

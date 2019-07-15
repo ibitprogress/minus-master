@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+        {% block description %}
+        {{object.title}}
+        {{object.preview|striptags|truncatewords:17}}
+        {{request.get_host}}
+        {% endblock %}
+{% block title %}{{object.title}} - {{block.super}}{% endblock %}
+
+{% block content %}
+            <div class="article-info">
+                {% if request.user == object.user or request.user.is_staff %}
+                
+                <a href="{% url news_edit object.id %}" class="btn altbtn right">Редагувати</a>
+                {% else %}
+                        Додав: <a class="dynamic user" href="{{ object.user.get_profile.get_absolute_url }}">{{object.user.get_profile.fullname}}</a><span class="technical"> | {{object.pub_date|date:"d.m.Y"}}</span>
+                {% endif %}
+
+            </div>
+            <div class="article-item">
+                <h4>{{object.title}}</h4>
+                <div class="article-content">
+                {% load sanity %}
+                {{object.preview|linebreaks|safe}}<br/>
+                {{object.body|safe}}
+                </div>
+            
+            </div>
+            {% include "shared/socials.html" %}
+            {% if object.allow_comments %}
+            <div class="comments">
+            {% load comments %}
+            {% render_comment_list for object %}
+            {% if request.user.is_authenticated %}
+            {% render_comment_form for object %}
+            {% endif %}
+            </div>
+            {% endif %}
+{% endblock %}
+

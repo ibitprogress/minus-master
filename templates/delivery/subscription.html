@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагування підписки {{ subscriber.email }} / {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<form id="subscribtion-form" method="post" class="mform" action="">{% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    <tr><td><input type="submit" value="Зберегти" /></td></tr>
+    </table>
+</form>
+
+<p>Якщо ви бажаєте відмовитись від підписки. Просто приберіть галочку з пункту «підписаний» і ми вас більше не турбуватимемо.</p>
+
+{% endblock %}

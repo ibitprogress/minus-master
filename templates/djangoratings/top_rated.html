@@ -1,0 +1,10 @@
+{% for object in top_rated_objects %}
+<dl>
+    <dt class="top_author">
+    {{object.author}}
+    </dt>
+    <dd class="top_item">
+    <a class="dynamic" href="{{ object.get_absolute_url }}">{{ object.title }}</a><span class="right rating">{{ object.rating_score }}</span>
+</dd>
+</dl>
+{% endfor %}

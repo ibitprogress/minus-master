@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Сайти-друзі / {{ block.super}}{% endblock %}
+
+{% block content %}
+<div class="links-add-button">
+    <a href="{% url links_add %}">Додати сайт</a>
+</div>
+<ul class="links-categories-list">
+{% for category in categories %}
+{% if category.friendlink_set.get_approved %}
+    <h3 class="links-category"><span>{{ category.name }}</span></h3>
+    {% for link in category.friendlink_set.get_approved %}
+    <li class="links-item">
+        <h5 class="links-item-title">{{ link.title }}</h5>
+        <span class="links-item-site">{{ link.site|urlize }}</a>
+        <p class="links-item-image">{{ link.image_code|safe }}</p>
+        <p class="links-item-description">{{ link.description }}</p>
+        {% if request.user.is_superuser %}
+        {% load links_tags %}
+        <p class="superuser-edit-button">
+            <a href="{% edit_object link %}">Редагувати в адмінці</a>
+        </p>
+        {% endif %}
+    </li>
+    {% endfor %}
+{% endif %}
+{% endfor %}
+</ul>
+<div class="links-add-button">
+    <a href="{% url links_add %}">Додати сайт</a>
+</div>
+{% load chunks %}
+{% chunk "ourbutton" %}
+{% endblock %}

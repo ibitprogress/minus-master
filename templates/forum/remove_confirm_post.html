@@ -1,0 +1,30 @@
+{% extends 'forum/forum_list.html' %}
+
+{% block title %}
+Видалення повідомлення #{{ post.id }}
+{% endblock %}
+
+{% block forumnav %}
+    {{ block.super }}
+    {% for title, url in post.thread.forum.get_url_name %}
+    &raquo; <a href='{{ url }}'>{{ title }}</a>
+    {% endfor %}
+    &raquo;
+    <a href="{{ post.thread.get_absolute_url }}">{{ post.thread.title }}</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="forum-title">
+    <span>Видалення повідомлення #{{ post.id }}</span>
+</div>
+
+<h3>Ви впевненні що хочете видалити повідомлення #{{ post.id }}?</h3>
+
+<form id="forum-delete" method="post" action="">{% csrf_token %}
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="Так, видалити повідомлення">
+</form>
+    <p><a href="{{ post.thread.get_absolute_url }}">Ні, повернутися назад, до теми</a></p>
+
+{% endblock %}

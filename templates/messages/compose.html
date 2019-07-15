@@ -1,0 +1,10 @@
+{% extends "messages/base.html" %} 
+{% block content %} 
+<h4>Написати повідомлення</h4>
+<form action="" class="mform" method="post">{% csrf_token %}
+<table>
+{{ form.as_table }}
+</table>
+<input type="submit" value="Надіслати"/>
+</form>
+{% endblock %}

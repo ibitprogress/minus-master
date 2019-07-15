@@ -1,0 +1,51 @@
+{% extends 'forum/forum_list.html' %}
+
+{% block title %}Відповідь до теми {{ thread.title }} / {{ block.super }}{% endblock %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block forumnav %}
+    {{ block.super }}
+    {% for title, url in thread.forum.get_url_name %}
+    &raquo;
+    <a href='{{ url }}'>{{ title }}</a>
+    {% endfor %}
+    &raquo; 
+    <a href='{{ thread.get_absolute_url }}'>{{ thread.title|escape }}</a>
+    &raquo;
+    Відповідь
+{% endblock %}
+
+{% block content %}
+
+<div class="forum-title">
+    <span>Відповідь до теми {{ thread.title }}</span>
+</div>
+
+<form id="id_forum_reply" method='post' action='./'>{% csrf_token %}
+    {% if form.errors %}
+    <ul>
+        {{ form.errors.as_ul }}
+    </ul>
+    {% endif %}
+    {{ form.as_p }}
+    <p>
+        <input type='submit' value='Написати' />
+    </p>
+</form>
+    
+<h3>Останні дописи в темі:</h3>
+<table class="reply-posts" border="0">
+{% for post in thread.post_set.all|slice:":10" %}
+    <tr><th><a href="{{post.author.get_profile.get_absolute_url}}">
+    {{post.author.get_profile.fullname}}</a></th>
+    <td>{{post.body|safe}}</td></tr>
+{{post.title}} 
+{% endfor %}
+</table>
+    <p>
+        <a href="{% url forum_view_thread thread.id %}">Повернутися до теми</a>
+    </p>
+{% endblock %}

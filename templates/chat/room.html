@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Чат {{holdr.title}}{% endblock %}
+{% block extrahead %}
+
+<link rel="stylesheet" href="{{MEDIA_URL}}css/jchat.css"/>
+<script type="text/javascript" src="{{MEDIA_URL}}js/jchat.js"></script>
+<script type="text/javascript">
+
+/* chat_id is passed form the view, the init_chat function then does all the magic */
+$(window).ready(function(){
+	init_chat({{chat_id}}, "chat");
+})
+</script>
+{% endblock %}
+
+{% block content %}
+<h4>Чат: {{holdr.title}}</h4>
+{% if holdr.description %}
+<p class="technical">
+{{holdr.description}}
+</p>
+{% endif %}
+<a class="link" href="{% url room_list %}"><img src="{{MEDIA_URL}}img/icons/arrow_undo.png">Назад до списку кімнат</a>
+{% ifequal request.user holdr.user %}
+{% comment %}
+TODO: Don't forget to change it in Django 1.2
+{% endcomment %}
+<a class="link" href="{% url delete_room holdr.id %}"><img src="{{MEDIA_URL}}img/icons/delete.png">Видалити кімнату</a>
+{% else %}
+{% if request.user.is_staff %}
+<a class="link" href="{% url delete_room holdr.id %}"><img src="{{MEDIA_URL}}img/icons/delete.png">Видалити кімнату</a>
+
+{% endif %}
+{% endifequal %}
+<hr/>
+<div id="chat"></div>
+{% endblock %}
+

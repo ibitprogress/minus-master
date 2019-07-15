@@ -1,0 +1,8 @@
+{% for holdr in new_minuses %}
+    <dl> <span class="small rating">{{holdr.date|date:"d.m.Y"}}</span>
+    {% for minus in holdr.minuses %}
+        <dt style="font-size:14px;" class="top_author">{{minus.author}}</dt>
+        <dd class="top_item"><a class="dynamic" href="{{minus.get_absolute_url}}">{{minus.title}}</a>{% ifnotequal minus.type.type_name "audio" %} <span class="type_indicator">{{minus.type}}</span>{%  endifnotequal %}</dd>
+    {% endfor %}
+    </dl>
+{% endfor %}

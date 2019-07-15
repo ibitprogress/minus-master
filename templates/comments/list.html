@@ -1,0 +1,19 @@
+<hr/>
+{% if comment_list %}
+<h6>Коментарі:</h6>
+{% for comment in comment_list %}
+    <div class="comment">
+{% load sanity %}
+        <div class="comment_author "><a class="user link dynamic" href="{{comment.user.get_absolute_url}}" title="{{comment.user.username}}">{{comment.user.get_profile.fullname}}</a>:</div> 
+        <div class="comment_body">
+        {{comment.comment|urlize|linebreaks|sanitize:"p blockquote span:style ul li ol i strike strong b em u a:href pre br "|safe}}
+        </div>
+
+{% if request.user.is_staff %}
+        <a class="link technical" href="{% url comments-delete comment.id %}"><img src="{{MEDIA_URL}}img/icons/delete.png" title="Видалити коментар"></a>
+{% endif %}
+        <hr/>
+    </div>
+{% endfor %}
+{% else %}
+{% endif %}

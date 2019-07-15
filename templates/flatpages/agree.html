@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ flatpage.title }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+
+<h4>{{flatpage.title}}</h4>
+<div class="shadowed">
+{{ flatpage.content|safe }}
+</div>
+<div class="shadow"></div>
+<form class="mform" name="agree" id="agreement_form" action="" method="POST" >{% csrf_token %}
+    <input type="hidden" name="__confirm__" id="id_confirm" value="1" />
+    <input type="submit" id="id_submit" name="submit" value="Я погоджуюсь"/ >
+</form>
+<hr/>
+<p><a href="{{ index }}">Ні, повернутися назад</a></p>
+{% endblock %}

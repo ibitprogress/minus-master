@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block bodyclass %}about{% endblock %}
+{% block content %}  
+{% endblock %}
+{% block extrahead %}
+{% endblock %}
+{% block subheader %}
+<script src="/static/js/ckeditor/ckeditor.js" type="text/javascript"></script>
+<div class="libuttons">
+<ul class="subnavilist">
+<li><a class="dynamic btn altbtn" href="{% url messages_inbox %}">Вхідні</a></li><li><a class="btn altbtn dynamic" href="{% url messages_outbox %} ">Вихідні</a></li><li><a class="btn dynamic altbtn" href="{% url messages_compose %} ">Нове повідомлення</a></li><li><a class="btn dynamic altbtn" href="{% url messages_trash %} ">Смітник</a></li></ul>
+</div>
+{% endblock %}

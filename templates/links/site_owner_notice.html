@@ -1,0 +1,15 @@
+Була подана заявка на розміщення нового баннеру в розділі: {{ friendlink.category }}:
+
+Назва сайту: {{ friendlink.title }}
+Адреса: {{ friendlink.site }}
+Опис: {{ friendlink.description }}
+{% if friendlink.banner_page %}
+Ваш баннер буде розміщенно на цій сторінці: {{ friendlink.banner_page }}
+{% endif %}
+E-Mail для зв’язку: {{ friendlink.email }}
+
+
+------------
+
+Для повного перегляду, редагування, підтвердження або видалення сайту,
+перейдіть по лінку: {{ site_url }}/admin/links/friendlink/{{ friendlink.id }}

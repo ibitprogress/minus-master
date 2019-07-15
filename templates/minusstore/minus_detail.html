@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+        {% block description %}
+        Мінусовка: {{object.author.name }} - {{object.title}}
+        {{object.annotation}}
+        {{object.lyrics|truncatewords:10}}
+        {{request.get_host}}
+        {% endblock %}
+{% block title %}{{object.author.name}} - {{object.title}} / Деталі Запису / {{ block.super }}{% endblock %}
+{% block extrahead %}
+
+
+    <script type="text/javascript">
+     $(document).ready(function(){
+        var returnd = false;
+        var vt = parseInt($("#ratingcount").text());
+         $(".vote").click(function(){
+            var votbtn = $(this);
+            var sc = parseInt(votbtn.html());
+            $.get("/minus/rate/{{object.id}}/"+sc,
+                function(data)
+                {
+                        returnd = true;
+                        $("#ratingscore").html(data);
+                        $("#ratingcount").text(vt+1);
+                        votbtn.addClass("active");
+                });
+         });
+     });
+
+    </script>
+    
+{% endblock %}
+{% block subheader %}
+{% endblock %}
+
+
+{% block content %}
+{% load ukrainian_date %}
+{% if request.user == object.user or request.user.is_staff %}
+<a id="editprofile" class="btn altbtn" href="{% url minus_edit request.user object.id%}">Редагувати</a>
+{% endif %}
+<div class="minusheader">
+<h4 class="min_author">{{object.author}}</h4>
+<h5 class="min_rec">{{object.title}}</h5>
+{% include 'users/staff_ticket_form.html' %}
+</div>
+<hr/>
+<table class="technical info">
+    <tr>
+        <td>
+            <dl>
+                <dt>Тип файлу: </dt><dd>{{ object.type }}</dd>
+            </dl>
+            {% if object.bitrate %}
+            <dl>
+                <dt>Бітрейт: </dt>
+                <dd>{{ object.bitrate }}</dd>
+            </dl>
+            {% endif %}
+            <dl>
+                <dt>Розмір файлу: </dt>
+                <dd>{{ object.filesize|filesizeformat }}</dd>
+            </dl>
+            {% if object.length %}
+            <dl>
+                <dt>Тривалість: </dt>
+                <dd>{{ object.length|time:"i:s" }}</dd>
+            </dl>
+            {% endif %}
+        </td>
+        <td>
+
+                <dl class="tright">
+                    <dt>Мінусовку додав:</dt><br/>
+                    <dd><a class="user dynamic" title={{object.user.username}} href="{% url user_profile object.user.username %}">{{object.user.get_profile.fullname}}</a></dd><br/>
+                    <dd>{{object.pub_date|birthdate}}
+                </dl>
+        </td>
+    </tr>
+</table>
+<hr/>
+{% load sanity %}
+{% if object.annotation %}
+    <h6>Опис:</h6>
+    {{ object.annotation|sanitize:"br p a:href strong em b i"|safe|linebreaks }}
+{% endif %}
+    {% ifequal object.type.type_name "audio" %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/audioplayer/audio-player.js"></script>  
+     <script type="text/javascript">  
+             AudioPlayer.setup("{{MEDIA_URL}}js/audioplayer/player.swf", {  
+                width: 330,  
+                transparentpagebg: "yes", 
+                loader: "14740F",
+                animation: "no",
+
+         });  
+</script> 
+
+
+    <span id="audioplayer">
+        <audio controls preload="auto" src="{{ object.file.url }}"></audio>
+    </span>
+<script type="text/javascript">
+AudioPlayer.embed("audioplayer", {soundFile:"http://{{request.get_host}}{{object.file.url|urlencode}}"});
+</script>
+
+    {% endifequal %}
+    {% ifequal object.type.type_name "midi" %}
+<OBJECT ID="MediaPlayer" WIDTH="368" HEIGHT="45" CLASSID="CLSID:22D6F312-B0F6-11D0-94AB-0080C74C7E95" STANDBY="Loading Windows Media Player components..." TYPE="application/x-oleobject">
+<PARAM NAME="FileName" VALUE="{{object.file.url|urlencode}}">
+<PARAM name="autostart" VALUE="false">
+<PARAM name="ShowControls" VALUE="true">
+<param name="ShowStatusBar" value="false">
+<PARAM name="ShowDisplay" VALUE="false">
+<EMBED TYPE="application/x-mplayer2" SRC="http://{{request.host}}{{object.file.url|urlencode}}" NAME="MediaPlayer"
+WIDTH="280" HEIGHT="45" ShowControls="1" ShowStatusBar="0" ShowDisplay="0" autostart="0"> </EMBED>
+</OBJECT>
+
+    {% endifequal %}
+    {% if request.user.is_authenticated %}
+    {% load hitcount_tags %}
+<a id="download" class="btn" href="{%url minus_download object.author object.id%}">Звантажити</a> <span class="technical"> Скачано: <span class="rating">{% get_hit_count for object %}</span> разів</span>
+    {% else %}<br/><div>
+    <p>
+    Для того щоб звантажувати записи, необхідно <a href="{% url auth_login %}">увійти</a> або <a href="{% url registration_register %}">зареєструватися</a>
+    </p>
+    </div>
+    {% endif %}
+    
+    {% comment %}
+    TODO: Change it to stg more nice.
+    {% endcomment %}
+    <div class="technical">
+    {% if request.user.is_authenticated %}
+    {% load ratings %}
+    {% rating_by_user request.user on object.rating as vote %}
+    {% if vote %}
+    <p>Ваша оцінка: {{vote}}</p>
+    {% else %}
+    <a class="vote" onclick="return false;" href = "{% url rate_on_minus object.id 1 %}">1</a>
+    <a class="vote" onclick="return false;" href = "{% url rate_on_minus object.id 2 %}">2</a>
+    <a class="vote" onclick="return false;" href = "{% url rate_on_minus object.id 3 %}">3</a>
+    <a class="vote" onclick="return false;" href = "{% url rate_on_minus object.id 4 %}">4</a>
+    <a class="vote" onclick="return false;" href = "{% url rate_on_minus object.id 5 %}">5</a>
+    Оцінити мінусовку.
+    {% endif %}
+    {% endif %}
+    Загальний рейтинг
+    <span id="ratingscore">{{ object.rating.score }}</span> (Голосів: <span id="ratingcount">{{ object.rating.votes }}</span>)
+
+
+    </div>
+    <div class="profileinfo">
+    <hr/>
+    <h6>Додаткові дані:</h6>
+    <dl>
+        {% if object.thematics %}
+        <dt>Тематика:</dt><dd>{{object.thematics}}</dd>
+        {% endif %}
+        <dt>Темп : </dt><dd>{{object.get_tempo_display}}</dd>
+        <dt>Виконується: </dt><dd>{{object.get_staff_display}}</dd>
+        <dt>Стать : </dt><dd>{{object.get_gender_display}}</dd>
+        <dt>Властивості: </dt>
+        <dd>
+        {% if object.is_amateur %}Аматорська {% if object.is_ritual or object.is_childish %}, {% endif %}{% endif %}
+        {% if object.is_ritual %}Обрядова(весілля, свята, і т.д){% if object.is_childish %}, {% endif %}{% endif %}
+        {% if object.is_childish %}Дитяча{% endif %}
+        </dd>
+        {% if object.categories.all %}
+        <dt>
+        Належить до жанрів: 
+        </dt>
+        {% for cat in object.categories.all %}
+        <dd>
+        {{ cat.display_name }}{% if not forloop.last%},{% else %}.{%endif%}
+        </dd>
+        {% endfor %}
+        {% endif %}
+    </dl>
+    </div>
+{% if object.lyrics %}
+    <h6>Текст пісні:</h6>
+    <div class="lyrics">{{ object.lyrics|sanitize:"br p"|safe|linebreaks }}</div>
+{% endif %}
+{% if object.up_plusrecord %}
+    <h6>Плюсовий запис</h6>
+    <span id="plus_audioplayer">{{ object.up_plusrecord.file.url }}</span>
+    <script type="text/javascript">
+        AudioPlayer.embed("plus_audioplayer", {animation:"yes", soundFile:"http://{{request.get_host}}{{object.up_plusrecord.file.url|urlencode}}"});
+    </script>
+    <br/>
+{% endif %}
+{% if object.plusrecord %}
+    <a class="pluslink" href="{{object.plusrecord}}">Звантажити аудіо (+)</a>
+{% endif %}
+
+{% if object.embed_video %}
+{% load inlines %}
+    {% process_inlines object.embed_video %}
+{% endif %}
+{% include 'shared/socials.html' %}
+
+{% load comments %}
+{% render_comment_list for object %}
+
+{% if request.user.is_authenticated %}
+<div class="top-spaced">
+{% render_comment_form for object %}
+  <span class="technical">Ви можете додати бракуючу інформацію про файл(автора, текст, посилання на оригінал) або залишити своє враження про мінусовку.
+{% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Записи завантажені користувачем {{user.get_profile.fullname}} / {{block.super}}{% endblock %}
+{% block content %}
+{% load pagination_tags %}
+{% autopaginate minuses %}
+<h4>Файли <a class="dynamic" href="{{user.get_profile.get_absolute_url}}">
+користувача {{user.get_profile.fullname}}</a></h4>
+<table class="filelist">
+<tr class="decoborder shadowed"><th>Виконавець</th><th>Пісня</th><th>Тип файлу, рейтинг</th><th>Додано</th><th>Опції</th></tr>
+{% for minus in minuses %}
+<tr>
+<td>{{minus.author}}</td>
+<td><p><a class="dynamic" href="{{minus.get_absolute_url}}">{{minus.title}}</a></p></td>
+<td class="technical">{{minus.type.display_name}}, <span class="rating">{{minus.rating.score}}</span></td>
+<td class="technical">{{minus.pub_date|date:"d.m.Y"}}</td>
+<td>{% ifequal minus.user request.user%}<a href="{%url minus_edit minus.user minus.id %}"><img alt="редагувати" title="редагувати" src="{{MEDIA_URL}}img/icons/pencil_go.png"></a>
+<a href="{% url minus_to_audiorec minus.id %}"><img src="{{MEDIA_URL}}img/icons/cd_go.png" alt="перенести в записи" title="перенести в записи"/>
+</a>
+{% endifequal %}<a class="dynamic" href="{{ minus.get_absolute_url}}"><img title="прослухати" alt="прослухати" src="{{MEDIA_URL}}img/icons/control_play.png"></a></td>
+</tr>
+{% endfor %}
+</table>
+{% paginate %}
+{% endblock %}

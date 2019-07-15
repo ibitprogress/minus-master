@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Перетворення запису {{ object.title }} / {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h3>Ви впевненні що хочете перетворити {% if type == "minus"%}мінусовку{%else%}запис{%endif %}  «{{ object.title }}» на {% if type == "minus" %}аудіозапис{%else%}мінусовку в каталозі{%endif %}</h3>
+<p class="technical">При цьому {% if type == "minus" %}так дані, як кількість переглядів, плюсовка та деяка розширена інформація будуть втрачені{% else %} вам необхідно буде заповнити деякі поля, щоб мінусовка відповідала критеріям якості каталогу{%endif%}.</p>
+
+<form id="id_convert" method="post" action="">{% csrf_token %}
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="Так, перетворити">
+</form>
+<hr/>
+<p><a href="{{ object.get_absolute_url }}">Ні, повернутися назад</a></p>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Записи виконавця {{author}}{% endblock %}
+
+{% block content %}
+<h4>Виконавець: {{author}}</h4>
+<ol>
+{% for minus in minuses %}
+<li><a href="{{minus.get_absolute_url}}">{{minus.title}}</a></li>
+{% endfor %}
+</ol>
+{% endblock %}

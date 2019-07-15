@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Видалити коментар / {{ block.super }}
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_staff %}
+<h3>Ви впевненні що хочете видалити коментар:</h3>
+  <blockquote>{{ comment.comment|safe|linebreaks }}</blockquote>
+
+<p class="technical">(Ця дія є невідновною)</p>
+<form class="mform" method="post" action="">{% csrf_token %}
+
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="Так, видалити ">
+
+    <input type="hidden" name="next" value="{{comment.content_object.get_absolute_url}}" id="next" />
+</form>
+<hr/>
+<p><a href="{{ comment.content_object.get_absolute_url }}">Ні, повернутися назад</a></p>
+{% else %}
+Не туди зайшли
+{% endif%}
+{% endblock %}

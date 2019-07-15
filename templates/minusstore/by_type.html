@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %} Записи у форматі {{type}}{% endblock %}
+{% block subheader %}
+{% include 'minusstore/minus_nav.html' %}
+<ul class="sub_nav sub2">
+{% for av_type in types %}
+<li><a href="{% url minus_by_type av_type %}">
+{% if av_type.display_name %}{{ av_type.display_name }}
+{% else %}{{ av_type.type_name }}{% endif %}
+</a></li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<ol>
+{% for minus in minuses %}
+<li><a href="{{minus.get_absolute_url}}">{{minus.author}} - {{minus.title}}</a></li>
+{% endfor %}
+</ol>
+{% endblock %}

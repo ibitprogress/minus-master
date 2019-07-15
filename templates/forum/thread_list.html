@@ -1,0 +1,148 @@
+{% extends 'forum/forum_list.html' %}
+{% load ukrainian_date %}
+
+{% block title %}{{ forum.title }} / {{ block.super }}{% endblock %}
+
+{% block extrahead %}
+<link rel="alternate" type="application/rss+xml" title="{{ forum.title }} Posts via RSS" href="{% url forum_index %}rss/{{ forum.slug }}/" />
+<link rel="alternate" type="application/atom+xml" title="{{ forum.title }} Posts via ATOM" href="{% url forum_index %}atom/{{ forum.slug }}/" />
+<link href="{{ MEDIA_URL }}css/forum.css" rel="stylesheet" media="screen" type="text/css" />
+{% endblock %}
+
+{% block forumnav %}
+    {{ block.super }}
+    {% for title, url in forum.get_url_name %}
+    &raquo; <a href='{{ url }}'>{{ title }}</a>
+    {% endfor %}
+{% endblock %}
+
+{% block content %}
+
+{% if child_forums %}
+<table id='forum-thread-list'>
+<tr>
+<th>Sub-Forum</th>
+<th>Last Post</th>
+</tr>
+
+{% for subforum in child_forums %}
+<tr>
+<td class='djangoForumListDetails'><p><strong><a href='{{ subforum.get_absolute_url }}'>{{ subforum.title }}</a></strong><br /><span class='djangoForumStats'>{{ subforum.threads }}thread{{ subforum.threads|pluralize }}, {{ subforum.posts }} post{{ subforum.posts|pluralize }}</span></p>
+<p>{{ subforum.description }}</p></td>
+{% with subforum.forum_latest_post as latest_post %}
+<td class='djangoForumListLastPost'>{% if latest_post %}{{ post.time|timesince }} ago by {{ lastest_post.author }} (<a href='{{ latest_post.get_absolute_url }}'>view</a>){% else %}No Posts{% endif %}</td>
+{% endwith %}
+</tr>
+{% endfor %}
+</table>
+<br />
+{% endif %}
+
+{% load pagination_tags %}
+{% autopaginate thread_list %}
+{% paginate %}
+
+<div class="forum-title">
+    <span>{{ forum.title }}</span>
+</div>
+
+<table id='forum-table'>
+
+<tr class="forum-table-columns">
+    <th class="column-title"></th>
+    <th class="column-title">Тема</th>
+    <th class="column-title column-author">Автор</th>
+    <th class="column-title column-posts">Відповідей</th>
+    <th class="column-title column-views">Переглядів</th>
+    <th class="column-title">Остання відповідь</th>
+</tr>
+
+{% for t in thread_list %}
+<tr class="forum-table-items">
+    <td class="item-thread-icon">
+        {% if t.is_popular %}
+            {% if t.is_very_popular %}
+            <img src="{{ MEDIA_URL }}img/forum/very_popular-thread.png"/>
+            {% else %}
+            <img src="{{ MEDIA_URL }}img/forum/popular-thread.png"/>
+            {% endif %}
+        {% else %} 
+        <img src="{{ MEDIA_URL }}img/forum/thread.png"/>
+        {% endif %}
+    </td>
+
+    <td class="item-thread-title">
+        {% if t.sticky %}
+        <img src="{{ MEDIA_URL }}img/forum/sticked-thread.png"/>
+        {% endif %}
+
+        {% if t.closed %}
+        <img src="{{ MEDIA_URL }}img/forum/closed-thread.png"/>
+        {% endif %}
+
+        <a href='{{ t.get_absolute_url }}'>{{ t.title|capfirst|safe|escape }}</a>
+        {% if moderator %}
+        <p class="thread-moderator-links">
+            <a href="{% url forum_edit_thread t.id %}">Редагувати тему</a>
+            <a href="{% url forum_delete_thread t.id %}">Видалити тему</a>
+        </p>
+        {% endif %}
+    </td>
+
+    <td class="item-thread-author">
+        <a href="{{ t.get_thread_author.get_absolute_url }}">{{ t.get_thread_author.get_profile.fullname }}</a>
+    </td>
+
+    <td class="item-thread-posts-count">
+        <span>{{ t.posts }}</span>
+    </td>
+
+    <td class="item-thread-views-count">
+        <span>{{ t.views }}</span>
+    </td>
+
+    <td class="item-thread-latest">
+        <span>
+        {% if t.thread_latest_post %}
+        <a href="{{ t.thread_latest_post.get_absolute_url }}">
+            {{ t.latest_post_time|postdate }}
+        </a>
+        <br />
+        Автор:
+        <a href="{{ t.thread_latest_post.author.get_absolute_url }}">
+        {{ t.thread_latest_post.author.get_profile.fullname|truncatewords:2 }}
+        </a>
+        {% else %}
+        Жодної відповіді
+        {% endif %}
+        </span>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% paginate %}
+
+{% if user.is_authenticated %}
+<div class="new-thread-button">
+<a href="{% url forum_new_thread forum.slug %}">Створити тему</a>
+</div>
+{% else %}
+<p class="forum-info-text">Для створення нових тем — будь-ласка авторизуйтесь.</p>
+{% endif %}
+
+{% endblock %}
+
+{% block quickgoto %}
+<div class="forum-goto">
+<form id="qjump" method="get" action="forum">{% csrf_token %}
+    <div><label>Перейти в:
+    <select name="id" id="forum_id" onchange="window.location=('{% url forum_index %}'+this.options[this.selectedIndex].value)">
+        {% for cat_forum in forums %}
+        <option value="{{ cat_forum.slug }}">{{ cat_forum.title }}</option>
+        {% endfor %}
+    </select>
+    </label></div>
+</form>
+</div>
+{% endblock %}

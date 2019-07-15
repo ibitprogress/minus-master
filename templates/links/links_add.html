@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Додайте сайт / {{ block.super }}{% endblock %}
+
+{% block content %}
+<form class="mform" id="id_links_add" action="{% url links_add %}" method="post">{% csrf_token %}
+<table>
+    {{ form.as_table }}
+</table>
+    <input type="submit" value="Додати" />
+</form>
+<hr/>
+{% load chunks %}
+{% chunk "ourbutton" %}
+{% endblock %}

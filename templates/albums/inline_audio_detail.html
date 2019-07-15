@@ -1,0 +1,57 @@
+<div class="audiorecord article-item">
+<div class="player">
+<span id="audioplayer-{{forloop.counter}}">{{ object.file.url }}</span>
+<script type="text/javascript">
+AudioPlayer.embed("audioplayer-{{forloop.counter}}", {
+    soundFile:"{{object.file.url|urlencode}}",
+    titles:{% if object.title %}"{{object.title}}"{% else %}"запис {{forloop.counter}}"{% endif %},
+    {% if object.content_object.user %}artists:"{{object.content_object.user}}",{% endif %}
+    }); {% comment %} FIXME hardcode {% endcomment %}
+</script>
+</div>
+<div  class="plusinfo">
+{% if object_list %}
+{% comment %}
+chek: is it list page, or detail page
+{% endcomment %}
+<a class="dynamic" href="{{object.get_absolute_url}}"><img src="{{MEDIA_URL}}img/icons/comments.png"/>
+Коментарі</a>
+{% else %}
+<a class="dynamic" href="{{object.album.get_absolute_url}}"><img src="{{MEDIA_URL}}img/icons/cd.png"/>З альбому {{object.album.name}}
+</a>
+{% endif %}
+{% if object.downloadable %}
+<a title="Звантажити запис" href="{{object.file.url}}"><img src="{{MEDIA_URL}}img/icons/drive_disk.png"/>Звантажити
+</a>
+
+{% endif %}
+</div>
+
+
+{% if request.user == "object.user" or request.user.is_staff %}
+<a class="dynamic" href="{% url edit_object "audio" object.pk %}"><img title="Редагувати" src="{{MEDIA_URL}}img/icons/pencil.png"/></a>
+<a class="dynamic" href="{% url remove_object "audio" request.user.username object.pk %}"><img alt="Видалити" title="Видалити" src="{{MEDIA_URL}}img/icons/delete.png"/></a>
+<a href="{% url audiorec_to_minus object.pk %}"><img alt="Перенести у мінусовки" title="Перенести у мінусовки" src="{{MEDIA_URL}}img/icons/cd_go.png"/></a>
+{% endif %}
+    <div class="ratings" id={{object.pk}}-rt">
+        {% if request.user.is_authenticated and request.user != object.user%}
+        {% load ratings %}
+        {% rating_by_user request.user on object.rating as vote %}
+        {% if vote %}
+            <p>Ваша оцінка: {{vote}}</p>
+        {% else %}
+        Oцінити:
+            <a class="vote" onclick="return false;" href = "{% url rate_on_audio object.id 1 %}">1</a>
+            <a class="vote" onclick="return false;" href = "{% url rate_on_audio object.id 2 %}">2</a>
+            <a class="vote" onclick="return false;" href = "{% url rate_on_audio object.id 3 %}">3</a>
+            <a class="vote" onclick="return false;" href = "{% url rate_on_audio object.id 4 %}">4</a>
+            <a class="vote" onclick="return false;" href = "{% url rate_on_audio object.id 5 %}">5</a>
+        {% endif %}
+        | {% endif %}
+        Рейтинг
+        <span class="ratingscore" id="{{object.pk}}-r">{{ object.rating.score }}</span> (<span class="technical" id="{{object.pk}}-ratingcount">{{ object.rating.votes }}</span>)
+    </div>
+{% if object.description %}
+<div class="{{object.pk}}-dscr ">Опис:<span class="technical">{{object.description|linebreaks}}</span></div>
+{% endif %}
+</div>

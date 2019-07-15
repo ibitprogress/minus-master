@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block extrahead %}
+    <script type="text/javascript" charset="utf-8" src="{{MEDIA_URL}}js/buysell.js"></script>
+
+{% endblock %}
+
+{% block title %}Куплю-продам \ {{ block.super }} {% endblock %}
+{% block content %}
+{% load comments %}
+{% load pagination_tags %}
+<h4>Пропозиції з купівлі та продажу {% if blurb_user %}<a href="{{blurb_user.get_profile.get_absolute_url}}">
+користувача {{blurb_user.get_profile.fullname}}{% endif %}</a></h4>
+{% if form %}
+<p>
+<span class="technical">Ви можете вибрати потрібні критерії відображення:<br/><br/></span>
+<form class="tpform shadowed" id="blurbs_filter" target="" method="get">
+<p>
+{% for field in form %}
+{{field.label}}&nbsp;{{field}}{% if forloop.counter|divisibleby:"2" %}</p><p>{% endif %}
+{% endfor %}
+</p>
+<input type="submit" value="Відфільтрувати"></input>
+</form>
+</p>
+<div class="shadow"></div>
+{% endif %}
+{% if request.user.is_authenticated %}
+<a class="btn altbtn" href="{% url blurb_add %}">Додати оголошення</a>
+<hr/>
+{% endif %}
+{% autopaginate object_list 10 %}
+{% for object in object_list %}
+            <div class="article-item">
+                <div class="blurb-header">
+                {% include 'blurbs/nav_line.html' %}/
+                <h5><a class="dynamic" href="{{object.get_absolute_url}}">{{object.title}}</a></h5>
+                {% if object.user == request.user or request.user.is_staff %}
+                
+                {% if object.is_week_ago %}
+                <a class="editbtns right blurb_up_button" href="{% url blurb_up object.id %}"><img src="{{MEDIA_URL}}img/icons/arrow_up.png"/>
+                <span>Підняти вгору</span></a>
+                {% endif %}
+                <a class="editbtns right" href="{% url blurb_edit object.id %}"><img src="{{MEDIA_URL}}img/icons/pencil.png"/>
+                Редагувати</a>
+                {% endif%}
+                </div>
+                <div class="article-content">
+                {% load albums %}
+                {% get_cover_photo for object as cover_photo %}
+                {% if cover_photo %}
+                <img class="article-photo" src="{{cover_photo.get_thumbnail_url}}"/>
+                {% endif %}
+                {% load sanity %}
+                {{object.description|truncatewords_html:50|sanitize:"p:style br em strong strike i b u a:href"|safe}}
+                </div>
+                <div class="article-info">
+                                        Дода{% if object.user.get_profile.gender == "female" %}ла{% else %}в{% endif %}: <a class="user dynamic" href="{{ object.user.get_profile.get_absolute_url }}" title="{{object.user.username}}">
+                        {{object.user.get_profile.fullname}}</a> {{object.pub_date|date:"d.m.Y"}}
+                {% get_comment_count for object as comment_count%}
+                {% if comment_count != 0%}<a href="{{object.get_absolute_url}}" class="dynamic technical">
+                Коментарі:{{comment_count}}</a>{% endif %}
+
+                </div>
+                <a class="dynamic" href="{{object.get_absolute_url}}" class="next-link">Подробиці &rarr;</a>
+            
+            </div>
+{% empty %}
+<p>
+Оголошень немає
+</p>
+{% endfor %}{% if request.user.is_authenticated %}
+<br/><a class="dynamic btn altbtn" href="{% url blurb_add %}">Додати оголошення</a>
+{% endif %}
+{% paginate %}
+{% endblock %}

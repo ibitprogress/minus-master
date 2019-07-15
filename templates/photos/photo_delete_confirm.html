@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Видалення фото {{ photo.title }} / {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h3>Ви впевненні що хочете видалити фото {{ photo.title }}?</h3>
+
+<form id="id_photo_delete" method="post" action="">{% csrf_token %}
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="Так, видалити фото">
+</form>
+    <p><a href="{{ photo.get_absolute_url }}">Ні, повернутися назад</a></p>
+
+{% endblock %}

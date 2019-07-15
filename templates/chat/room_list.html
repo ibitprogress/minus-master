@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Чат{% endblock %}
+
+{% block content %}
+{% if room_list %}
+<h4>Список доступних чатів</h4>
+<hr/>
+<ul>
+{% for room in room_list %}
+<li><img src="{{MEDIA_URL}}img/icons/comments.png"/><a href="{% url chat_room room.id %}">{{room.title}}</a> {% if room.description %}<span class="technical">({{room.description|truncatewords:"10"}})</span>{% endif %}</li>
+{% endfor %}
+</ul>
+{% else %}
+<h4>Немає активних чатів</h4>
+{% endif %}
+<hr/>
+<a class=" right btn altbtn" href="{% url create_room %}">Створити чат-кімнату</a>
+
+{% endblock %}
+
