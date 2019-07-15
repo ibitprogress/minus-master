@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}{{object.title}} / Конкурс вокалістів / {{block.super}}{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/audioplayer/audio-player.js"></script>  
+     <script type="text/javascript">  
+             AudioPlayer.setup("{{MEDIA_URL}}js/audioplayer/player.swf", {  
+                width: "50%",  
+                transparentpagebg: "yes", 
+                loader: "14740F",
+                animation: "no",
+
+         });  
+
+    </script> 
+    {% if request.user.is_authenticated %}
+    <script type="text/javascript" src="{{MEDIA_URL}}js/vote_contest.js"></script>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% load vocal_contest_tags %}
+<h4><a href="{% url vocal_contest_index %}">Конкурс вокалістів:</a>Учасник</h4> 
+<div class="vocal_contest_participant  vc_big shadowed">
+<div class="vcp_main_info">
+            <img class="vcp_img" src="
+            {% if object.user.get_profile.avatar %}
+            {{ object.user.get_profile.avatar.url }}
+            {% else %}
+            {{ MEDIA_URL }}avatars/default.png
+            {% endif %}
+            " alt="avatar" />
+<h5 class="vcp"><a href="{{object.user.get_profile.get_absolute_url}}">{{object.user.get_profile.fullname}}</a></h5>
+<h6 class="vcp">{{object.title}}</h6>
+<p>{{object.description}}</p>
+<span class="vcp_player" id="audioplayer">{{ minus.file.url }}</span>
+<script type="text/javascript">
+AudioPlayer.embed("audioplayer", {soundFile:"http://{{request.get_host}}{{object.file.url|urlencode}}",titles: "{{object.title}}" }); 
+</script>
+</div>
+<dl class="vcp_tech_info">
+<dt>Додано:</dt><dd>{{object.pub_date|date:"d.m.Y"}}</dd>
+<dt>Категорія:</dt><dd>{{object.category.title}}</dd>
+    {% load voting_tags %}
+    {% score_for_object object as score %}
+
+{% if object.contest.status != 'open' %}
+<dt>Рейтинг:</dt><dd>
+
+{% if object.contest.status == 'closed' and request.user.is_authenticated and request.user.get_profile.is_versed and request.user != object.user %}
+    <span class="votes_count" id="score_{{object.id}}">{{score.score}}</span>
+    {% vote_by_user request.user on object as vote %}
+    {% if not vote %}
+    <span class="vote_button" id="voteup_{{object.id}}"><a class="vote" href="#upvote" onclick="vote('{{object.id}}', 'upvote')">+1</a></span>
+    {% endif %}
+    {% else %}
+    <span class="votes_count" id="score_{{object.id}}">{{score.score}}</span>
+{% endif %}
+</dd>
+{% endif %}
+</dl>
+
+
+<div class="vcp_additional_info">
+</div>
+</div>
+<div class="shadow"></div>
+{% include 'shared/socials.html' %}
+{% load comments %}
+{% render_comment_list for object %}
+
+{% if request.user.is_authenticated %}
+<div class="top-spaced">
+{% render_comment_form for object %}
+{% endif %}
+</div>
+
+{% endblock %}

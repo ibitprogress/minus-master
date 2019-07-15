@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Конкурс Вокалістів: {{current_category.contest.title}} / {{current_category.title}} {% if order == 'rate' %} / рейтинги / {{block.super }}{%endif %}{% endblock %}
+
+{% block extrahead %}
+
+{% if not current_category.contest.is_real %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/audioplayer/audio-player.js"></script>  
+     <script type="text/javascript">  
+             AudioPlayer.setup("{{MEDIA_URL}}js/audioplayer/player.swf", {  
+                width: "50%",  
+                transparentpagebg: "yes", 
+                loader: "14740F",
+                animation: "no",
+
+         });  
+
+    </script> 
+    {% if request.user.is_authenticated %}
+    <script type="text/javascript" src="{{MEDIA_URL}}js/vote_contest.js"></script>
+    {% endif %}
+{% endif %}
+  {% endblock %}
+{% block content %}
+{% load vocal_contest_tags %}
+
+<h4>Конкурс вокалістів: {{current_category.contest.title}}</h4>
+<div class="technical">{{current_category.contest.description|linebreaks}}
+{% if current_category.contest.rules %}<p><a class="dynamic" href="{{ current_category.contest.rules.get_absolute_url}}">Правила конкурсу</a></p>{% endif %}
+</div>
+
+{% include 'shared/socials.html' %}
+<hr/>
+<ul class="vc_cat_list">
+<div class="vc_cat_order">Категорії:</div>
+{% for cat in categories %}
+<li {% if cat == current_category %} class="current"{% endif %}>
+<a class="dynamic" href="{% url vocal_contest_filter cat.id order %}">{{cat.title}}</a><sup class="technical">({{cat.participants_count}})</sup>
+</li>
+{% endfor %}
+</ul>
+{% if current_category.contest.is_real %}
+{% include 'vocal_contest/filter_real.html' %}
+{% else %}
+{% include 'vocal_contest/filter_not_real.html' %}
+{% endif %}
+{% endblock %}
+
+

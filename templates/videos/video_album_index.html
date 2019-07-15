@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Фотоальбоми / {{ block.super }}
+{% endblock %}
+
+{% block subheader %}
+
+<div class="video-album-menu">
+    <a href="/">Головна сторінка</a>
+    &raquo;
+    <a href="{% url video_album_index %}">Відеоальбоми</a>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+{% load pagination_tags %}
+{% autopaginate video_albums %}
+<div class="album">
+    {% for album in video_albums %}
+    <ul class="album-list">
+    <li class="album-list-item">
+    <a href="{% url video_album_detail album.slug %}">
+    <h5>{{ album }}</h5>
+    <p class="album-name">
+    {{ album.name }}
+    </p>
+    {% if album.description %}
+    <p class="album-description">
+    {{ album.description }}
+    </p>
+    {% endif %}
+    </li>
+    </a>
+    </ul>
+    {% endfor %}
+</div>
+{% paginate %}
+
+{% endblock %}

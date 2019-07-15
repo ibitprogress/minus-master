@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Користувачі / {{ block.super}}{% endblock %}
+
+{% block content %}
+
+{% load pagination_tags %}
+{% autopaginate user_list %}
+
+<form id="search_users_form" class="mform" method="get" action="{% url user_list_search %}">
+    <input class="search_field" id="id_q_users" name="q" {% if search_term %}value={{search_term}}{% endif %} type="text">
+    <input value="Знайти користувача" type="submit">
+</form>
+<hr/>
+{% if message %}
+<p class="message">{{ message }}</p>
+{% endif %}
+
+{% if user_list %}
+<ul class="userlist">
+    {% for user in user_list %}
+            <li>
+            <img src="{{ user.get_profile.small_avatar_url }}"  />
+                <a class="dynamic" class="user" title="{{user.username}}" href="{{ user.get_absolute_url }}">{{ user.get_profile.fullname }}</a>
+            {% ifequal request.user user %}
+
+            <a href="{% url user_editprofile user.username %}" class="link"><img src="{{MEDIA_URL}}img/icons/pencil.png">Редагувати</a>
+            {% endifequal %}
+            </li>
+    {% endfor %}
+</ul>
+
+{% paginate %}
+{% else %}
+Нікого нема
+{% endif %}
+{% endblock %}

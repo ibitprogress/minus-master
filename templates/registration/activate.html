@@ -1,0 +1,10 @@
+
+{% extends 'base.html' %}
+{% block title %}Activation / {{ block.super }}{% endblock %}
+{% block content %}
+{% if account %}
+<p>Ваш аккаунт активовано</p>
+{% else %}
+<p>Невірний код активації, або термін його дії закінчився.</p>
+{% endif %}
+{% endblock %}

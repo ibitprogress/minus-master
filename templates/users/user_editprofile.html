@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагування профілю / {{ block.super }}{% endblock %}
+
+{% block content %}
+<form class="mform" id="id_userprofile" action="{{ request.path}}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<table>
+    {{ form.as_table }}
+</table>
+    <input type="submit" value="Зберeгти" />
+</form>
+{% endblock %}

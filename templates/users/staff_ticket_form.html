@@ -1,0 +1,37 @@
+{% if request.user.is_authenticated %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery.form.js"></script>  
+<a href="#" id="showmoderform">Повідомити<br/> модератора</a>
+<div id="moderformblock">
+    <div id="closemoderform">
+        
+    </div>
+    <form class="mform" id="moderform" action="{% url submit_staff_ticket %}" method="post" accept-charset="utf-8">
+    <p>Повідомлення</p>
+    <hr>
+    <textarea name="message" rows="8" cols="40"></textarea>
+    <input type="hidden" name="url" value="{{request.build_absolute_uri}}">
+    <input type="hidden" name="object_id" value="{{object.id}}">
+    <br/>
+    <p class="small technical">Увага, зловживання даною функцією карається</p>
+    <input type="submit" value="Надіслати &rarr;">
+    </form>
+</div>
+    <script type="text/javascript" charset="utf-8">
+            $("#showmoderform").click(function(){
+                $(this).hide();
+                $("#moderformblock").fadeIn();
+                return false;
+            });
+
+            $("#closemoderform").click(function(){
+                $('#showmoderform').show();
+                $("#moderformblock").fadeOut();
+                return false;
+
+            });
+
+            $("#moderform").ajaxForm(function(){
+                $("#moderform").html('<p><hr/>Повідомлення надіслано і буде розглянуто</p>');
+            });
+    </script>
+{% endif %}

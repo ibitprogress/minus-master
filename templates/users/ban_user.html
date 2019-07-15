@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Заблокувати користувача | {{block.title}}{% endblock %}
+
+{% block content %}
+<p>Заблокувати користувача {{user.get_profile.fullname}} ?</p>
+<hr/>
+<p class="technical">Його буде сповіщено про це на і-мейл</p>
+<form id="ban_form" class="mform" target="" method="POST">{% csrf_token %}
+<table>
+{{form.as_table}}
+<tr><td><input type="submit" name="submit" value="Заблокувати"></td></tr>
+</table>
+</form>
+{% endblock %}
+

@@ -1,0 +1,26 @@
+{% load vocal_contest_tags %}
+<div class="clearfix"></div>
+<div class="real_vc_participants">
+<h4>Учасники</h4>
+{% for object in object_list %}
+{% with object.user.get_profile as profile %}
+
+
+<a class="real_vc_person" href="{{profile.get_absolute_url}}"><img src="{{profile.small_avatar_url}}" alt="{{ profile.fullname}}" title="{{profile.fullname}}"></a> 
+
+{% endwith %}
+{% endfor %}
+</div>
+<div class="real_vc_guests">
+<h4>Гості</h4>
+{% for guest in guest_list %}
+{% with guest.user.get_profile as profile %}
+<a class="real_vc_person" href="{{profile.get_absolute_url}}"><img src="{{profile.small_avatar_url}}" alt="{{ profile.fullname}}" title="{{profile.fullname}}"></a> 
+{% endwith %}
+{% endfor %}
+<br/>
+<br/>
+<p class="technical">
+Та ще {% guests_remaining %}...
+</p>
+</div>

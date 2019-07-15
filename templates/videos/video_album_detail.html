@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ video_album.name }} / {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+    <h4>Відео користувача {{ video_album.user.get_profile.fullname }}</h4>
+<p>
+<a href="{% url user_profile video_album.user %}"><img src="{{MEDIA_URL}}img/icons/user_orange.png"/>До профілю</a><br/>
+{% ifequal request.user video_album.user %}
+<a href="{% url video_add video_album.slug %}"><img src="{{MEDIA_URL}}img/icons/film_add.png"/>Додати відео</a> 
+{% endifequal %}
+</p>
+
+
+<div class="album">
+    {% if video_album.video_set.all %}
+    {% for video in video_album.video_set.all %}
+    <div class="videos">
+        <a href="{{ video.get_absolute_url }}">
+                {{ video.title }}
+        </a>
+        
+        <div class="embed_video">
+        {% load inlines %}
+        {% process_inlines video.embed_video %}
+        </div>
+        {% ifequal request.user video.video_album.user %}
+            <a class="link" href="{% url video_edit video.video_album.slug video.id %}">Редагувати</a>
+        {% endifequal %}
+        <p class="photo-description">
+            {{ video.description }}
+        </p>
+    <hr/>
+    </div>
+    {% endfor %}
+    </div>
+    {% else %}
+    <p>Користувач не додав жодного відео до альбому</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+
+{% if request.user.is_authenticated %}
+{% block sidebar %}
+<ul id="photo-menu" class="menu">
+    <h5 class="menu-title">Відеоальбом</h5>
+    <li>Кількість відео: {{ video_album.videos_count }}</li>
+    <li><a href="{% url video_album_edit video_album.slug %}">Редагувати фотоальбом</a></li>
+</ul>
+{% endblock %}
+{% endif %}

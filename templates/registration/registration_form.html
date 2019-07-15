@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Реєстрація на сайті / {{ block.super }}{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<p>Ви вже успішно зареєстровані та авторизовані. <a href="/">На головну</a>.
+
+{% else %}
+
+<h4> Реєстрація </h4>
+<form id="id_registration" class="mform" action="{% url registration.views.register %}" method="POST">{% csrf_token %}
+
+    <table>
+        <tr>
+        <td>
+        {{ form.username.errors }}
+        <label for="id_username">Ім’я користувача(нікнейм):</label>
+        </td>
+        <td>
+        {{ form.username }}
+        <div class="technical">Лише латинські літери та цифри</div>
+        </td>
+        </tr> 
+        <tr>
+        <td>
+        {{ form.email.errors }}
+        <label for="id_email">E-mail адреса:</label>
+        </td>
+        <td>
+        {{ form.email }}
+        </td> 
+        </tr>
+        <tr>
+        <td>
+        {{ form.password1.errors }}
+        {{ form.non_field_errors }}
+        <label for="id_password1">Пароль:</label>
+        </td>
+        <td>
+        {{ form.password1 }}
+        </td>
+        </tr>
+        <tr>
+        <td>
+        {{ form.password2.errors }}
+        <label for="id_password2">Ще раз пароль:</label>
+        </td>
+        <td>
+        {{ form.password2 }}
+        </td>
+        </tr> 
+        <tr>
+        <td colspan="2">
+       Перш ніж <br/> <input type="submit" value="Зареєструватись" /> <br/>
+        рекомендуємо вам
+        ознайомитися з <a class="link" href="/rules/">правилами користування ресурсом</a> і дотримуватися їх.
+        
+        </td>
+        </tr>
+    </table>
+</form>
+
+{% endif %}
+
+{% endblock %}

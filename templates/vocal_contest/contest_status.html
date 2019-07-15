@@ -1,0 +1,57 @@
+{% if status != 'future' %}
+<div class="vocal_contest vc_block shadowed">
+    <a class="vocal_contest_archive_link technical dynamic" href="{% url vocal_contest_archive %}">Архів конкурсів</a>
+    <div class="main_contest_info">
+    <a class="vocal_contest_link dynamic" href="{% url vocal_contest_index %}">{%if contest.is_real%}Оф-лайн к{% else %}К{%endif%}онкурс вокалістів</a>
+    <a class="dynamic" href="{% url vocal_contest_index %}">
+    {% if status == 'open' %}
+        <img class="contest_img" src="{{MEDIA_URL}}img/microphone_green.png"/>
+</a>
+        <p>Відкрито реєстрацію</p>
+    {% else %}
+        {% if status == 'closed'%}
+        <img class="contest_img" src="{{MEDIA_URL}}img/microphone_orange.png"/>
+</a>
+             <p>Реєстрацію завершено.{% if not contest.is_real%} Голосування{% endif %}</p>
+        {% else %} 
+            {% if status == 'finished' %}
+        <img class="contest_img" src="{{MEDIA_URL}}img/star_green.png"/>
+</a>
+                <p>Результати</p>
+            {% endif %}
+        {% endif %}
+
+    {% endif %}
+    <span class="technical">Учасників: {{participants_count}}
+    {% if contest.is_real %}Гостей: {{guests_count}}{% endif %}
+    </span>
+    </div>
+    <div class="additional_contest_info technical">
+    {% if status != 'finished' %}
+    {% if status != 'closed' %}
+        <p>
+            Закінчення реєстрації: {{contest.registration_end_date|date:"d.m.Y"}}
+        </p>
+    {% endif %}
+        <p>
+        Завершення конкурсу: {{contest.end_date|date:"d.m.Y"}}
+        </p>
+    {% endif %}
+    {% if status == 'open' %}
+        <p>
+        {% if contest.is_real %}
+        Реєстрація:
+        <a class="dynamic" href="{% url vocal_contest_participate %}">для учасників</a> та
+        <a class="dynamic" href="{% url vocal_contest_guest %}">гостей</a>
+        
+        {% else %}<a class="dynamic" href="{% url vocal_contest_participate %}">Прийняти участь</a>
+        
+        {% endif %}
+        </p>
+    {% endif %}
+    </div>
+
+</div>
+<div class="shadow vc_block"></div>
+{% endif %}
+

@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+         {% block description %}
+        Користувач: {{userdetail.get_profile.fullname}}
+
+        {{request.get_host}}
+        {% endblock %}
+{% block title %}
+Профіль користувача {{ userdetail.get_profile.fullname }} / {{ block.super }}
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/vote_user.js"></script>
+    <script type="text/javascript">
+     $(document).ready(function(){
+         $("#addfriend").click(function(){
+             $.get("{% url friendship_request userdetail.username %}", function(data)
+             {
+                 $("#addfriend").html("<span class=\"rating technical\">Запит надіслано</span>");
+             });
+         });
+     });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+
+{% ifequal request.user userdetail %}
+<a id="editprofile" class="btn altbtn" href="edit">Редагувати</a>
+{% else %}
+
+{% endifequal %}
+<h4>{%ifequal request.user userdetail %}Це ви{% else %}Інформація про користувача{% endifequal %}</h4>
+<div class="profileinfo" id="profile">
+
+{% if userdetail.get_profile.avatar %}
+<p class="right" class="userdetail.ic"><img src="{{ userdetail.get_profile.avatar.url }}"  />
+</p>
+{% endif %}
+
+
+<dl class="info">
+{% if userdetail.get_profile.name %}
+    <dt>Ім’я:</dt>
+    <dd>{{ userdetail.get_profile.name }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.surname %}
+    <dt>Прізвище:</dt>
+    <dd>{{ userdetail.get_profile.surname }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.city %}
+    <dt>Місто:</dt>
+    <dd>{{ userdetail.get_profile.city }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.country %}
+    <dt>Країна:</dt>
+    <dd>{{ userdetail.get_profile.country }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.gender %}
+    <dt>Стать:</dt>
+    <dd>{{ userdetail.get_profile.get_gender_display }}</dd>
+{% endif %}
+
+
+{% if userdetail.get_profile.birthdate and not userdetail.get_profile.hide_birthdate %}
+{% comment %}TODO change it in django 1.2 {% endcomment %}
+    <dt>Д.Н.:</dt>
+    {% load ukrainian_date %}
+    <dd>{{ userdetail.get_profile.birthdate|birthdate }}</dd>
+{% endif %}
+
+
+{% if userdetail.get_profile.icq %}
+    <dt>ICQ:</dt>
+    <dd>{{ userdetail.get_profile.icq }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.jabber %}
+    <dt>Jabber:</dt>
+    <dd>{{ userdetail.get_profile.jabber }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.skype %}
+    <dt>Skype:</dt>
+    <dd>{{ userdetail.get_profile.skype }}</dd>
+{% endif %}
+
+{% if userdetail.get_profile.website %}
+    <dt>Вебсайт:</dt>
+    <dd>{{ userdetail.get_profile.website|urlize }}</dd>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+    <dt>На сайті з:</dt>
+    <dd>{{userdetail.date_joined|birthdate}}
+{% endif %}
+{% if userdetail.get_profile.status_title %}
+    <dt>Статус:</dt>
+    <dd class="{{userdetail.get_profile.status_css}}">{{ userdetail.get_profile.status_title}}</dd>
+{% endif %}
+    <dt>Рейтинг:</dt>
+    <dd>
+    <span class="rating" >{{userdetail.u_rate.rating}}</span>
+    </dd>
+    <dt>Оцінка:</dt>
+    <dd>
+    {% load voting_tags %}
+    {% score_for_object userdetail as score %}
+    <span id="score_{{ userdetail.username }}" >{{score.score}}</span>
+    <span class="vote_button"><a class="vote" href="#upvote" onclick="vote('{{ userdetail.username }}', 'upvote')">+</a></span>
+    <span class="vote_button"><a class="vote" href="#downvote" onclick="vote('{{ userdetail.username }}', 'downvote')">–</a></span>
+    <span class="technical">(Голосів:
+    <span id="num_votes_{{ userdetail.username }}">{{ score.num_votes }}</span>
+    )</span>
+    </dd>
+
+</dl>
+</div>
+
+{% if request.user.is_authenticated %}
+<p><img src="{{MEDIA_URL}}img/icons/email_add.png"/><a class="dynamic" href="{% url messages_compose_to userdetail.username %}">Відправити повідомлення</a><br/>
+{% if userdetail.uploaded_records.all %}
+<img src="{{MEDIA_URL}}img/icons/cd.png"/><a class="dynamic" href="{% url minus_by_user userdetail.username %}">Мінусовки користувача</a> <span class="small technical">({{userdetail.uploaded_records.count}})</span><br/>
+{% endif %}
+{% if userdetail.audio_set.all %}
+<img src="{{MEDIA_URL}}img/icons/microphone.png"/><a class="dynamic" href="{% url list_albums "audio" userdetail.username %}">Аудіозаписи</a> <span class="small technical">({{userdetail.audio_set.count}})</span><br/>
+{% endif %}
+{% if userdetail.get_profile.has_photos %}
+<img src="{{MEDIA_URL}}img/icons/photos.png"/><a class="dynamic" href="{% url album_detail userdetail.username %}">Фотоальбом</a><br/>
+{% endif %}
+{% if userdetail.get_profile.has_videos %}
+<img src="{{MEDIA_URL}}img/icons/television.png"><a class="dynamic" class="link" href="{% url video_album_detail userdetail.username %}">Відео</a><br/>
+{% endif %}
+{% ifnotequal request.user userdetail %}
+{% load friends_tags %}
+{% if not userdetail|is_friend_of:request.user %}
+<img src="{{MEDIA_URL}}img/icons/group_add.png"/><a class="functional" id="addfriend" onclick="return false;" href="#">Долучити до друзів</a>
+{% else %}
+<img src="{{MEDIA_URL}}img/icons/group_delete.png"><a class="technical" href="{% url friendship_delete userdetail.username %}">Вилучити з друзів</a></a>
+{% endif %}
+{% endifnotequal %}
+<br/>
+{% if userdetail.friends.all %}
+<img src="{{MEDIA_URL}}img/icons/user_orange.png"/><a class="dynamic" href="{% url friend_list userdetail.username %}">Друзі користувача</a>
+{% endif %}
+<br/>
+
+</p>
+{% endif %}
+{% if request.user.is_staff %}
+<hr/>
+<img src="{{MEDIA_URL}}img/icons/user_delete.png"/><a class="altlink" href="{% url ban_user userdetail.id %}">{% if userdetail.get_profile.banned %}Заблоковано до {{userdetail.get_profile.banned_until}}. Розблокувати{% else %}Заблокувати{% endif %} користувача</a>
+<br/>
+<hr/>
+
+{% endif %}
+<div class="profileinfo">
+{% if userdetail.get_profile.about %}
+<dl>
+<dt>Про себе</dt>
+<dd>{{userdetail.get_profile.about|urlize|linebreaks}}
+
+</dd>
+</dl>
+{% endif %}
+
+<div class="userinfo-extra">
+    {% for minusrecord in userdetail.uploaded_records.all|slice:":5" %}
+        {% if forloop.first %}
+            <h5>Останні залиті мінусовки:</h5>
+            <ul class="technical">
+        {% endif %}
+                <li><a class="dynamic" href="{{ minusrecord.get_absolute_url }}">{{ minusrecord|safe }}</a></li>
+        {% if forloop.last %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+
+    {% for post in userdetail.forum_post_set.all|slice:":5" %}
+    {% if forloop.first %}
+        <h5>Останні повідомлення на форумі:</h5>
+        <ul class="technical">
+    {% endif %}
+            <li>
+            <a href="{{ post.get_absolute_url }}">{{ post.body|striptags|truncatewords:"7" }}</a>
+            &rarr;
+            <a href="{{ post.thread.get_absolute_url }}">{{ post.thread.title|striptags|truncatewords:"5" }}</a>
+            </li>
+    {% if forloop.last%}
+        </ul>
+
+    {% endif %}
+    {% endfor %}
+</ul>
+</div>
+{% include 'shared/socials.html' %}
+</div>
+{% endblock %}

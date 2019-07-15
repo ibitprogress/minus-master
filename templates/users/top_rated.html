@@ -1,0 +1,8 @@
+{% for rating in top_users %}
+<dl>
+    <dt class="top_author">
+    <a class="user dynamic" title="{{rating.user.username}}" href="{{rating.user.get_absolute_url}}">{{rating.user.get_profile.fullname}}</a>
+    <span class="right rating">{{ rating.rating }}</span></dt>
+</dd>
+</dl>
+{% endfor %}

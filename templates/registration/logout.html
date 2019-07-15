@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Вихід з сайту / {{ block.super }}{% endblock %}
+
+{% block content %}
+<p>Ви успішно вийшли</p>
+<script type="text/javascript">
+<!--
+setTimeout("window.location = \"/\"", 3000);
+//-->
+</script>
+
+{% endblock %}

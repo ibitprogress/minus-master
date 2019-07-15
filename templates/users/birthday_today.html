@@ -1,0 +1,7 @@
+{% if birthday_users %}
+{% for user in birthday_users %}
+<li><a class="dynamic" href="{{ user.user.get_absolute_url }}">{{ user.user.username }}</a></li>
+{% endfor %}
+{% else %}
+<li>Іменинників сьогодні немає</li>
+{% endif %}

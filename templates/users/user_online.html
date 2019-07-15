@@ -1,0 +1,13 @@
+{% if moders %}
+<h3>Модератори сайту</h3>
+{% else %}
+<h3>Користувачі <span class="rating">ONLINE</span> ({{ active_users.count }})</h3>
+{% endif %}
+{% if active_users %}
+{% for active_user in active_users %}
+<a class="dynamic user {{active_user.user.get_profile.status_css}}" title="{{active_user.user.username}}" href="{{ active_user.user.get_absolute_url }}">{{active_user.user.get_profile.fullname }}</a> .
+{% endfor %}
+
+{% else %}
+Немає жодного
+{% endif %}

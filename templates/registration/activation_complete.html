@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}Активацію завершено / {{ block.super }}{% endblock %}
+{% block content %}
+<p>Ваш аккаунт було активовано, тепер Ви можете  <a href="{% url auth_login %}">увійти</a> на сайт.</p>
+{% endblock %}

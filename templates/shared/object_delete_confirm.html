@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Видалити {{object_name}} {{ object.title }} / {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h3>Ви впевненні що хочете видалити {{object_name}} «{{ object }}»?</h3>
+<p class="technical">Ця дія є невідновною</p>
+
+<form class="mform" method="post" id = "object_delete" action="">{% csrf_token %}
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="Так, видалити ">
+</form>
+<hr/>
+<p><a href="{{ object.get_absolute_url }}">Ні, повернутися назад</a></p>
+
+{% endblock %}

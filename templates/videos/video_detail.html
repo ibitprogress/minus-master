@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ photo.title }} / {{ photo.album.name }} / {{ block.super }}
+{% endblock %}
+
+{% block subheader %}
+
+<div class="photo-album-menu">
+    <a href="/">Головна сторінка</a>
+    &raquo;
+    <a href="{% url video_album_index %}">Відеоальбоми</a>
+    &raquo;
+    <a href="{{ video.video_album.get_absolute_url }}">{{ video.video_album }}</a> / {{ video.video_album.name }}
+    &raquo;
+    {{ video.title }}
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="photo">
+    <p class="photo-image">
+        <p class="embed_video">
+        {% load inlines %}
+        {% process_inlines video.embed_video %}
+        </p>
+        <p class="photo-description">
+            {{ video.description }}
+        </p>
+    </p>
+</div>
+
+{% endblock %}

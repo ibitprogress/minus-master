@@ -1,0 +1,6 @@
+Користувач {{user.username}} встановив собі ім’я: {{user.first_name }} {{user.last_name}} що співпадає з :
+{% for u in other_users_qs %}
+    {{site_url}}{{u.get_profile.get_absolute_url}}
+{% endfor %}
+
+Це повідомлення згенероване автомтично, внаслідок виявлення дублів.

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Архів конкурсів | {{block.super}}{% endblock %}
+
+{% block content %}
+<h4>Архів конкурсів</h4>
+{% for object in object_list %}
+<div class="vocal_contest_archive_item shadowed">
+<h5 class="vcp">
+<a href="{{object.get_absolute_url}}">
+{{object.title}}
+</a>
+</h5>
+<p class="technical">{{object.description}}</p>
+<dl>
+<dt>Початок:</dt><dd>{{object.start_date|date:"d.m.Y"}}</dd>
+<dt>Завершення:</dt><dd>{{object.end_date|date:"d.m.Y"}}</dd>
+<dt>Категорії:</dt><dd>{{object.categories.all|length}}</dd>
+<dt>Учасники:</dt><dd>{{object.participants.all|length}}</dd>
+</dl>
+<a class="vocal_contest_archive_item_link technical" href="{{object.get_absolute_url}}">Переглянути результати</a>
+</div>
+<div class="shadow"></div>
+{% empty %}
+Конкурсів наразі немає
+{% endfor %}
+{% endblock %}
+
