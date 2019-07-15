@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "sites.site", "fields": {"domain": "example.com", "name": "example.com"}}, {"pk": 1, "model": "flatpages.flatpage", "fields": {"registration_required": false, "title": "\u041f\u0440\u0438\u0432\u0456\u0442", "url": "/", "template_name": "flatpages/index.html", "sites": [1], "content": "\u0431\u043b\u0430", "enable_comments": false}}]
